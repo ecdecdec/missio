@@ -12,8 +12,8 @@ const LINKS = {
     { label: "Партнёрство", href: "/org" },
   ],
   Контакты: [
-    { label: "Instagram", href: "https://instagram.com/missio.kz" },
-    { label: "hello@missio.kz", href: "mailto:hello@missio.kz" },
+    { label: "Instagram", href: "https://instagram.com/poam.me" },
+    { label: "hello@poam.me", href: "mailto:hello@poam.me" },
     { label: "Астана, Казахстан", href: "#" },
   ],
 };

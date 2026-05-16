@@ -7,12 +7,15 @@ export const metadata: Metadata = {
   title: "MISSIO — найди свой грант",
   description:
     "Архив образовательных возможностей. 12 400+ школьников, 580+ программ, 94% точность AI-подбора.",
+  metadataBase: new URL("https://poam.me"),
   openGraph: {
     title: "MISSIO",
     description: "Архив образовательных возможностей для школьников Казахстана",
     siteName: "MISSIO",
     locale: "ru_KZ",
     type: "website",
+    url: "https://poam.me",
+    emails: ["hello@poam.me"],
   },
 };
 
