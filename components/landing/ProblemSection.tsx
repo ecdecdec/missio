@@ -1,4 +1,4 @@
-﻿export default function ProblemSection() {
+export default function ProblemSection() {
   const before = [
     { msg: "кто-нибудь знал про FLEX??", mine: true },
     { msg: "подача была на прошлой неделе", mine: false },
@@ -16,7 +16,7 @@
         <div className="grid grid-cols-1 md:grid-cols-2 border border-[rgba(242,240,235,0.15)]">
           {/* Before */}
           <div className="p-8 md:border-r border-[rgba(242,240,235,0.15)]">
-            <p className="font-mono-c text-[11px] uppercase mb-8 opacity-60">До Missio ✗</p>
+            <p className="font-mono-c text-[11px] uppercase mb-8 opacity-60">Без платформы ✗</p>
             <div className="space-y-4 mb-8">
               {before.map((item, i) => (
                 <div key={i} className={`flex gap-3 ${item.mine ? "" : "flex-row-reverse"}`}>
@@ -36,7 +36,7 @@
 
           {/* After */}
           <div className="p-8 border-t md:border-t-0 border-[rgba(242,240,235,0.15)]">
-            <p className="font-mono-c text-[11px] uppercase mb-8 text-[var(--blue)]">С Missio ✓</p>
+            <p className="font-mono-c text-[11px] uppercase mb-8 text-[var(--blue)]">С платформой ✓</p>
             <div className="border border-[rgba(242,240,235,0.15)] p-5 mb-4">
               <p className="font-mono-c text-[9px] uppercase opacity-50 mb-2">Новый матч · 21 день</p>
               <p className="font-display font-bold text-xl tight mb-1">FLEX Program</p>

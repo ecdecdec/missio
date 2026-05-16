@@ -144,7 +144,7 @@ export default function Hero() {
                   />
                 </g>
 
-                {/* Center Missio text */}
+                {/* Center text */}
                 <text
                   x="140"
                   y="230"
@@ -155,7 +155,7 @@ export default function Hero() {
                   fill="#1B3BFF"
                   letterSpacing="8"
                 >
-                  MISSIO
+                  
                 </text>
 
                 {/* Connecting line between figures */}
@@ -184,7 +184,7 @@ export default function Hero() {
           </div>
           <figcaption className="font-mono-c text-[10px] uppercase opacity-50 mt-3 flex justify-between">
             <span>fig. 001 / archive</span>
-            <span>↗ missio_2026.svg</span>
+            <span>↗ file_2026.svg</span>
           </figcaption>
         </figure>
       </div>

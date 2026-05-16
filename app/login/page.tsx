@@ -42,7 +42,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl" style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif" }}>
-            Missi<span className="text-[var(--green-400)]">o•</span>
+            <span className="text-[var(--green-400)]">•</span>
           </Link>
           <p className="text-sm text-[var(--text-secondary)] mt-2">Войди в свой аккаунт</p>
         </div>

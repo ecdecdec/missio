@@ -11,7 +11,7 @@ export default function Navbar() {
       <div className="flex items-center justify-between px-6 md:px-10 h-16 max-w-[1400px] mx-auto">
         {/* Logo */}
         <Link href="/" className="font-display font-bold text-base tracking-tight">
-          MISSIO
+          
         </Link>
 
         {/* Desktop nav */}

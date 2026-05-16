@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -50,7 +50,7 @@ export default function OrgDashboard() {
       <header className="bg-[var(--gray-900)] text-white px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/" className="text-xl" style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif" }}>
-            Missio<span className="text-[var(--green-400)]">•</span>
+            <span className="text-[var(--green-400)]">•</span>
           </Link>
           <span className="text-sm text-zinc-400">/ Для организаций</span>
         </div>

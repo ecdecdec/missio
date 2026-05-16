@@ -153,7 +153,7 @@ function OnboardingContent() {
             onClick={() => router.push("/")}
             className="font-mono-c text-[11px] uppercase opacity-60 hover:opacity-100 transition-opacity"
           >
-            ← MISSIO
+            ← Назад
           </button>
           <span className="font-mono-c text-[11px] uppercase opacity-60">
             Шаг {step + 1} из 6

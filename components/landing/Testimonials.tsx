@@ -1,9 +1,9 @@
-﻿const testimonials = [
+const testimonials = [
   {
     name: "Аружан К.",
     school: "НИШ Алматы",
     grade: "11 класс",
-    quote: "Нашла FLEX через Missio за 20 минут. Подала. Прошла.",
+    quote: "Нашла FLEX через платформу за 20 минут. Подала. Прошла.",
     program: "FLEX · США",
     idx: "001",
   },

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -69,7 +69,7 @@ export default function OrgLandingPage() {
                 Найдите лучших школьников Казахстана
               </motion.h1>
               <motion.p variants={fadeUp} className="body-lg max-w-2xl text-[var(--on-dark-muted)]">
-                Missio — прямой канал к 3000+ амбициозным школьникам КЗ. Публикуйте программы, находите идеальных аппликантов, получайте заявки.
+                Платформа — прямой канал к 3000+ амбициозным школьникам КЗ. Публикуйте программы, находите идеальных аппликантов, получайте заявки.
               </motion.p>
               <motion.div variants={fadeUp} className="flex gap-3 flex-wrap justify-center">
                 <a href="#contact">

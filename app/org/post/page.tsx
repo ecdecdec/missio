@@ -61,7 +61,7 @@ export default function PostProgramPage() {
     <div className="min-h-screen bg-[var(--bg-secondary)]">
       <header className="bg-[var(--gray-900)] text-white px-6 py-4 flex items-center justify-between">
         <Link href="/" className="text-xl" style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif" }}>
-          Missio<span className="text-[var(--green-400)]">•</span>
+          <span className="text-[var(--green-400)]">•</span>
         </Link>
       </header>
 

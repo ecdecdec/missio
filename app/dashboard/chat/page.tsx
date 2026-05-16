@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef, useEffect, Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
@@ -128,7 +128,7 @@ function ChatContent() {
             <Bot size={18} className="text-[var(--green-600)]" />
           </div>
           <div>
-            <h1 className="text-sm font-semibold text-[var(--text-primary)]">AI-ассистент Missio</h1>
+            <h1 className="text-sm font-semibold text-[var(--text-primary)]">AI-ассистент</h1>
             <p className="text-xs text-[var(--text-tertiary)]">Claude · стриминг · профиль с устройства</p>
           </div>
         </div>

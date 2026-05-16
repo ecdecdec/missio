@@ -21,7 +21,7 @@ type MatchResponse = {
   matches: MatchResult[];
 };
 
-const SYSTEM_PROMPT = `You are Missio's matching engine for Kazakhstan school students (grades 8–11), including NIS, BIL, and regular schools.
+const SYSTEM_PROMPT = `You are an AI matching engine for Kazakhstan school students (grades 8–11), including NIS, BIL, and regular schools.
 
 Input JSON has:
 - studentProfile: interests, grades, English level, school type, city, subjects, achievements, goals, etc.

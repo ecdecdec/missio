@@ -4,14 +4,14 @@ import SmoothScrollProvider from "@/components/layout/SmoothScrollProvider";
 import ScrollProgress from "@/components/layout/ScrollProgress";
 
 export const metadata: Metadata = {
-  title: "MISSIO — найди свой грант",
+  title: "Найди свой грант",
   description:
     "Архив образовательных возможностей. 12 400+ школьников, 580+ программ, 94% точность AI-подбора.",
   metadataBase: new URL("https://poam.me"),
   openGraph: {
-    title: "MISSIO",
+    title: "Платформа",
     description: "Архив образовательных возможностей для школьников Казахстана",
-    siteName: "MISSIO",
+    siteName: "Платформа",
     locale: "ru_KZ",
     type: "website",
     url: "https://poam.me",

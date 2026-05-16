@@ -37,11 +37,10 @@ const Navbar: React.FC = () => {
         <Link
           href="/"
           className="flex items-center space-x-2"
-          aria-label="Missio"
+          aria-label="Home"
         >
           <span className="font-display text-2xl font-semibold tracking-tight text-text">
-            Missi
-            <span className="text-primary">o</span>
+            <span className="text-primary"></span>
           </span>
         </Link>
 

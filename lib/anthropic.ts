@@ -4,7 +4,7 @@ export const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-export const MISSIO_SYSTEM = `Ты AI-ассистент образовательной платформы Missio для школьников Казахстана.
+export const MISSIO_SYSTEM = `Ты AI-ассистент образовательной платформы для школьников Казахстана.
 
 Ты помогаешь:
 - Писать мотивационные письма и эссе для международных программ

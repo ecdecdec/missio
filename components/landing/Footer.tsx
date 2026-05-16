@@ -26,9 +26,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] border-b border-[var(--border)]">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1 py-10 md:border-r border-[var(--border)] md:pr-10">
-            <p className="font-display font-bold text-xl tracking-tight mb-4">
-              MISSIO
-            </p>
+              
             <p className="font-mono-c text-[11px] uppercase opacity-50 leading-relaxed max-w-[240px]">
               Архив образовательных возможностей для школьников Казахстана
             </p>
@@ -57,7 +55,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6">
           <p className="font-mono-c text-[10px] uppercase opacity-40">
-            © 2026 Missio · Все права защищены
+            © 2026 · Все права защищены
           </p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="font-mono-c text-[10px] uppercase opacity-40 hover:opacity-80 transition-opacity">

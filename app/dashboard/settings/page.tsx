@@ -217,7 +217,7 @@ export default function SettingsPage() {
                       const url = URL.createObjectURL(blob);
                       const a = document.createElement("a");
                       a.href = url;
-                      a.download = "missio-profile.json";
+                      a.download = "profile.json";
                       a.click();
                       URL.revokeObjectURL(url);
                     }}

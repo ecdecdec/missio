@@ -117,7 +117,7 @@ export default function ProgramDetailClient({
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--text-tertiary)]">
               <Link href="/" className="hover:text-[var(--text-secondary)]">
-                Missio
+                Главная
               </Link>
               <span>/</span>
               <Link href="/programs" className="hover:text-[var(--text-secondary)]">
