@@ -1,30 +1,41 @@
-import { cn } from "@/lib/utils";
+import React from "react";
+import { motion } from "framer-motion";
+import clsx from "clsx";
+
+type CardVariant = "default" | "elevated" | "accent";
 
 interface CardProps {
-  variant?: "default" | "elevated" | "accent";
-  className?: string;
+  variant?: CardVariant;
   children: React.ReactNode;
+  className?: string;
   onClick?: () => void;
 }
 
-export default function Card({ variant = "default", className, children, onClick }: CardProps) {
+const Card: React.FC<CardProps> = ({
+  variant = "default",
+  children,
+  className,
+  onClick,
+}) => {
+  const baseClasses =
+    "bg-white border border-black/8 rounded-2xl p-5 transition-transform duration-200 ease-out hover:-translate-y-1";
+  const variantClasses: Record<CardVariant, string> = {
+    default: "",
+    elevated: "shadow-[0_18px_45px_rgba(0,0,0,0.08)]",
+    accent: "border-l-[3px] border-l-[#1D9E75]",
+  };
+
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
       onClick={onClick}
-      className={cn(
-        "bg-white border rounded-2xl p-5 transition-all duration-200",
-        {
-          "border-[var(--border)] hover:border-[var(--border-hover)]": variant === "default",
-          "border-[var(--border)] shadow-sm hover:shadow-md hover:border-[var(--border-hover)]":
-            variant === "elevated",
-          "border-[var(--border)] border-l-2 border-l-[var(--green-400)] hover:border-[var(--border-hover)]":
-            variant === "accent",
-        },
-        onClick && "cursor-pointer",
-        className
-      )}
+      className={clsx(baseClasses, variantClasses[variant], className)}
     >
       {children}
-    </div>
+    </motion.div>
   );
-}
+};
+
+export default Card;

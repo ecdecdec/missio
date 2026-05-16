@@ -11,7 +11,7 @@ const STATS = [
   { icon: Users, label: "Охват аппликантов", value: "2,847", change: "+12%", color: "var(--green-600)", bg: "var(--green-50)" },
   { icon: MousePointerClick, label: "Кликов по программе", value: "342", change: "+8%", color: "var(--blue-400)", bg: "#EFF6FF" },
   { icon: FileText, label: "Заявок получено", value: "67", change: "+23%", color: "var(--amber-400)", bg: "#FFFBEB" },
-  { icon: TrendingUp, label: "Конверсия", value: "19.6%", change: "+3.2%", color: "var(--coral-400)", bg: "#FFF7ED" },
+  { icon: TrendingUp, label: "Конверсия", value: "19.6%", change: "+3.2%", color: "#EA580C", bg: "#FFF7ED" },
 ];
 
 const APPLICANTS = [
@@ -32,10 +32,16 @@ export default function OrgDashboard() {
   const [gradeFilter, setGradeFilter] = useState("all");
   const [cityFilter, setCityFilter] = useState("all");
 
+  const [englishFilter, setEnglishFilter] = useState("all");
+
   const filtered = APPLICANTS.filter((a) => {
-    const matchGrade = gradeFilter === "all" || a.grade === parseInt(gradeFilter);
+    const matchGrade = gradeFilter === "all" || a.grade === parseInt(gradeFilter, 10);
     const matchCity = cityFilter === "all" || a.city === cityFilter;
-    return matchGrade && matchCity;
+    const matchEn =
+      englishFilter === "all" ||
+      (englishFilter === "high" && a.english.startsWith("C")) ||
+      (englishFilter === "mid" && (a.english.startsWith("B") || a.english.startsWith("C")));
+    return matchGrade && matchCity && matchEn;
   });
 
   return (
@@ -46,7 +52,7 @@ export default function OrgDashboard() {
           <Link href="/" className="text-xl" style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif" }}>
             Missio<span className="text-[var(--green-400)]">•</span>
           </Link>
-          <span className="text-[var(--gray-400)] text-sm">/ Для организаций</span>
+          <span className="text-sm text-zinc-400">/ Для организаций</span>
         </div>
         <div className="flex items-center gap-3">
           <Link href="/org/post">
@@ -103,9 +109,18 @@ export default function OrgDashboard() {
                 <option value="11">11 класс</option>
               </select>
               <select
+                value={englishFilter}
+                onChange={(e) => setEnglishFilter(e.target.value)}
+                className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs outline-none focus:border-[var(--green-400)]"
+              >
+                <option value="all">Все уровни EN</option>
+                <option value="high">C1+</option>
+                <option value="mid">B2+</option>
+              </select>
+              <select
                 value={cityFilter}
                 onChange={(e) => setCityFilter(e.target.value)}
-                className="border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs focus:border-[var(--green-400)] outline-none"
+                className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs outline-none focus:border-[var(--green-400)]"
               >
                 <option value="all">Все города</option>
                 <option value="Алматы">Алматы</option>

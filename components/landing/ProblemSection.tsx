@@ -1,119 +1,65 @@
-﻿"use client";
-
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
-import { ArrowRight } from "lucide-react";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] } },
-};
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
-};
-
-export default function ProblemSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+﻿export default function ProblemSection() {
+  const before = [
+    { msg: "кто-нибудь знал про FLEX??", mine: true },
+    { msg: "подача была на прошлой неделе", mine: false },
+    { msg: "ладно, в следующем году…", mine: true },
+  ];
 
   return (
-    <section ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <motion.div
-        variants={stagger}
-        initial="hidden"
-        animate={inView ? "visible" : "hidden"}
-        className="text-center mb-16"
-      >
-        <motion.span variants={fadeUp} className="label text-[var(--text-tertiary)]">
-          Проблема
-        </motion.span>
-        <motion.h2 variants={fadeUp} className="display-md text-[var(--text-primary)] mt-3">
-          Дедлайн: вчера
-        </motion.h2>
-        <motion.p variants={fadeUp} className="body-lg text-[var(--text-secondary)] mt-4 max-w-2xl mx-auto">
-          Тысячи школьников узнают о FLEX, Болашаке и MIT PRIMES из случайных постов в чате —
-          когда подача уже закрыта.
-        </motion.p>
-      </motion.div>
+    <section className="border-b border-[var(--border)] bg-[var(--foreground)] text-[var(--background)]">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 py-24">
+        <p className="font-mono-c text-[11px] uppercase mb-6 opacity-60">§ 03</p>
+        <h2 className="font-display font-bold tight text-[40px] md:text-[56px] mb-16">
+          Узнаёшь о гранте<br />за 2 дня до дедлайна?
+        </h2>
 
-      <motion.div
-        variants={stagger}
-        initial="hidden"
-        animate={inView ? "visible" : "hidden"}
-        className="grid md:grid-cols-3 gap-6 items-center"
-      >
-        {/* Before */}
-        <motion.div variants={fadeUp} className="bg-white border border-[var(--border)] rounded-2xl p-6 shadow-sm">
-          <div className="label text-[var(--text-tertiary)] mb-4">Как сейчас</div>
-          <div className="space-y-3">
-            {[
-              { msg: "кто-нибудь знал про FLEX??", anon: true },
-              { msg: "да, подача была вчера 💀", anon: false },
-              { msg: "ну всё, в следующем году", anon: true },
-            ].map((item, i) => (
-              <div key={i} className={`flex gap-2 ${!item.anon ? "flex-row-reverse" : ""}`}>
-                <div className="w-6 h-6 rounded-full bg-[var(--gray-100)] shrink-0 flex items-center justify-center text-xs text-[var(--text-tertiary)]">
-                  ?
+        <div className="grid grid-cols-1 md:grid-cols-2 border border-[rgba(242,240,235,0.15)]">
+          {/* Before */}
+          <div className="p-8 md:border-r border-[rgba(242,240,235,0.15)]">
+            <p className="font-mono-c text-[11px] uppercase mb-8 opacity-60">До Missio ✗</p>
+            <div className="space-y-4 mb-8">
+              {before.map((item, i) => (
+                <div key={i} className={`flex gap-3 ${item.mine ? "" : "flex-row-reverse"}`}>
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center border border-[rgba(242,240,235,0.2)] font-mono-c text-[10px] opacity-40">
+                    ?
+                  </div>
+                  <div className={`max-w-[85%] border border-[rgba(242,240,235,0.15)] px-4 py-2 font-display text-sm ${item.mine ? "" : "opacity-60"}`}>
+                    {item.msg}
+                  </div>
                 </div>
-                <div
-                  className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
-                    item.anon
-                      ? "bg-[var(--gray-100)] text-[var(--text-primary)]"
-                      : "bg-[var(--gray-200)] text-[var(--text-primary)]"
-                  }`}
-                >
-                  {item.msg}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 flex items-center gap-2 bg-red-50 text-red-600 rounded-xl px-4 py-2 text-sm font-medium">
-            <span className="text-base">⏰</span>
-            Дедлайн: вчера
-          </div>
-        </motion.div>
-
-        {/* Arrow */}
-        <motion.div
-          variants={fadeUp}
-          className="flex flex-col items-center gap-3"
-        >
-          <div className="hidden md:flex w-12 h-12 rounded-full bg-[var(--green-50)] items-center justify-center">
-            <ArrowRight size={20} className="text-[var(--green-600)]" />
-          </div>
-          <p className="text-sm text-[var(--text-tertiary)] text-center max-w-xs">
-            Missio знает о программах раньше всех и присылает алерт лично тебе
-          </p>
-        </motion.div>
-
-        {/* After */}
-        <motion.div variants={fadeUp} className="bg-white border border-[var(--green-400)]/30 rounded-2xl p-6 shadow-sm">
-          <div className="label text-[var(--green-600)] mb-4">С Missio</div>
-          <div className="bg-[var(--green-50)] rounded-2xl p-4 mb-4">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-[var(--green-400)] flex items-center justify-center text-white text-sm font-bold shrink-0">
-                M
-              </div>
-              <div>
-                <p className="text-sm font-medium text-[var(--text-primary)]">FLEX — обмен в США</p>
-                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-                  Дедлайн через 21 день · Твой шанс: высокий
-                </p>
-                <button className="mt-2 text-xs font-medium text-[var(--green-600)] underline">
-                  Открыть программу →
-                </button>
-              </div>
+              ))}
+            </div>
+            <div className="border border-[rgba(242,240,235,0.15)] px-4 py-3 font-mono-c text-[11px] uppercase opacity-60">
+              Дедлайн прошёл · тревога и пустая неделя
             </div>
           </div>
-          <div className="flex items-center gap-2 bg-[var(--green-50)] text-[var(--green-600)] rounded-xl px-4 py-2 text-sm font-medium">
-            <span className="text-base">✅</span>
-            Дедлайн: через 21 день
+
+          {/* After */}
+          <div className="p-8 border-t md:border-t-0 border-[rgba(242,240,235,0.15)]">
+            <p className="font-mono-c text-[11px] uppercase mb-8 text-[var(--blue)]">С Missio ✓</p>
+            <div className="border border-[rgba(242,240,235,0.15)] p-5 mb-4">
+              <p className="font-mono-c text-[9px] uppercase opacity-50 mb-2">Новый матч · 21 день</p>
+              <p className="font-display font-bold text-xl tight mb-1">FLEX Program</p>
+              <p className="font-mono-c text-[10px] opacity-50">США · Обмен · 1 год</p>
+              <div className="mt-4">
+                <div className="flex justify-between font-mono-c text-[9px] opacity-50 mb-1">
+                  <span>Совместимость</span>
+                  <span className="text-[var(--blue)] opacity-100">94%</span>
+                </div>
+                <div className="h-px bg-[rgba(242,240,235,0.15)]">
+                  <div className="h-px bg-[var(--blue)]" style={{ width: "94%" }} />
+                </div>
+              </div>
+            </div>
+            <div className="border border-[rgba(242,240,235,0.15)] px-4 py-3 font-mono-c text-[11px] uppercase text-[var(--blue)]">
+              Напоминание за 21 день · спокойный темп подачи
+            </div>
+            <p className="font-mono-c text-[10px] uppercase opacity-50 mt-4">
+              ✓ Чеклист документов · AI-помощь с эссе
+            </p>
           </div>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   );
 }

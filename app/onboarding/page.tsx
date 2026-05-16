@@ -1,452 +1,508 @@
-﻿"use client";
+"use client";
 
-import { useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
-import Button from "@/components/ui/Button";
-import Link from "next/link";
+import { ArrowLeft, ArrowRight, Check, User, BookOpen, Trophy, FileText, Target, Bell } from "lucide-react";
+import { KZ_CITIES, KZ_SCHOOLS, SCHOOL_TYPES } from "@/lib/kz-schools";
+import { COUNTRIES } from "@/lib/countries";
+import type { StudentProfileInput } from "@/lib/program-types";
 
-/* ── Types ── */
-interface StudentProfile {
-  name: string;
-  schoolType: string;
-  city: string;
-  grade: string;
-  subjects: string[];
-  englishLevel: string;
-  achievements: string[];
-  targetTypes: string[];
-  targetCountries: string[];
-  horizon: string;
-  whatsapp: string;
-  telegram: string;
-  email: string;
-  alertFrequency: string;
-}
+const STEPS = [
+  { icon: User, title: "Личные данные", subtitle: "Расскажи о себе" },
+  { icon: BookOpen, title: "Учёба", subtitle: "Академический профиль" },
+  { icon: Trophy, title: "Достижения", subtitle: "Олимпиады и награды" },
+  { icon: FileText, title: "Документы", subtitle: "Готовность к подаче" },
+  { icon: Target, title: "Цели", subtitle: "Куда хочешь попасть" },
+  { icon: Bell, title: "Уведомления", subtitle: "Как оповещать" },
+];
 
-const INITIAL: StudentProfile = {
-  name: "",
-  schoolType: "",
-  city: "",
-  grade: "",
-  subjects: [],
-  englishLevel: "",
-  achievements: [],
-  targetTypes: [],
-  targetCountries: [],
-  horizon: "",
-  whatsapp: "",
-  telegram: "",
-  email: "",
-  alertFrequency: "immediate",
-};
+const SUBJECTS = [
+  "Математика", "Физика", "Информатика", "Химия", "Биология",
+  "Английский", "Русский", "Казахский", "История", "География",
+  "Литература", "Экономика", "Право", "Философия", "Искусство",
+  "Музыка", "Спорт", "Робототехника", "Программирование",
+];
 
-/* ── Framer variants ── */
+const PROGRAM_TYPES = [
+  { value: "exchange", label: "Обмен", icon: "🌍" },
+  { value: "scholarship", label: "Стипендии", icon: "🎓" },
+  { value: "grant", label: "Гранты", icon: "💰" },
+  { value: "internship", label: "Стажировки", icon: "💼" },
+  { value: "olympiad", label: "Олимпиады", icon: "🏆" },
+  { value: "competition", label: "Конкурсы", icon: "🏅" },
+  { value: "summer_school", label: "Летние школы", icon: "☀️" },
+  { value: "leadership", label: "Лидерство", icon: "🚀" },
+  { value: "research", label: "Исследования", icon: "🔬" },
+];
+
 const slideVariants = {
-  enter: (dir: number) => ({ opacity: 0, x: dir * 48 }),
-  center: { opacity: 1, x: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] } },
-  exit: (dir: number) => ({ opacity: 0, x: dir * -48, transition: { duration: 0.25 } }),
+  enter: (direction: number) => ({
+    x: direction > 0 ? 300 : -300,
+    opacity: 0,
+  }),
+  center: { x: 0, opacity: 1 },
+  exit: (direction: number) => ({
+    x: direction > 0 ? -300 : 300,
+    opacity: 0,
+  }),
 };
-
-/* ── Helper toggle ── */
-function toggle<T>(arr: T[], val: T): T[] {
-  return arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val];
-}
-
-/* ── Multi-select chip ── */
-function Chip({
-  label,
-  selected,
-  onClick,
-}: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`px-4 py-2 rounded-full text-sm font-medium border transition-all duration-200 flex items-center gap-1.5 ${
-        selected
-          ? "bg-[var(--green-400)] text-white border-[var(--green-400)] shadow-sm"
-          : "border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--green-400)]/40 hover:text-[var(--text-primary)] bg-white"
-      }`}
-    >
-      {selected && <Check size={12} />}
-      {label}
-    </button>
-  );
-}
-
-/* ── Step 1 ── */
-function Step1({ data, onChange }: { data: StudentProfile; onChange: (d: Partial<StudentProfile>) => void }) {
-  const schoolTypes = ["НИШ", "БИЛ", "Обычная школа", "Другая"];
-  const cities = ["Алматы", "Астана", "Шымкент", "Актобе", "Тараз", "Другой"];
-  const grades = ["8", "9", "10", "11"];
-
-  return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Как тебя зовут?</label>
-        <input
-          value={data.name}
-          onChange={(e) => onChange({ name: e.target.value })}
-          placeholder="Аружан"
-          className="w-full border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:border-[var(--green-400)] focus:ring-2 focus:ring-[var(--green-400)]/20 outline-none transition-all"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">Тип школы</label>
-        <div className="flex flex-wrap gap-2">
-          {schoolTypes.map((s) => (
-            <Chip key={s} label={s} selected={data.schoolType === s} onClick={() => onChange({ schoolType: s })} />
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">Город</label>
-        <div className="flex flex-wrap gap-2">
-          {cities.map((c) => (
-            <Chip key={c} label={c} selected={data.city === c} onClick={() => onChange({ city: c })} />
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">Класс</label>
-        <div className="flex gap-2">
-          {grades.map((g) => (
-            <Chip key={g} label={`${g} класс`} selected={data.grade === g} onClick={() => onChange({ grade: g })} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ── Step 2 ── */
-function Step2({ data, onChange }: { data: StudentProfile; onChange: (d: Partial<StudentProfile>) => void }) {
-  const subjects = ["Математика", "Физика", "Химия", "Биология", "История", "Английский", "Информатика", "Экономика", "Русский", "Казахский", "Искусство", "Музыка"];
-  const levels = ["A1", "A2", "B1", "B2", "C1", "C2"];
-  const achievements = ["Олимпиады", "Проекты", "Волонтёрство", "Спорт", "Искусство", "Лидерство"];
-
-  return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Сильные предметы</label>
-        <p className="text-xs text-[var(--text-tertiary)] mb-3">Выбери все, которые тебе даются хорошо</p>
-        <div className="flex flex-wrap gap-2">
-          {subjects.map((s) => (
-            <Chip key={s} label={s} selected={data.subjects.includes(s)} onClick={() => onChange({ subjects: toggle(data.subjects, s) })} />
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">Уровень английского</label>
-        <div className="flex flex-wrap gap-2">
-          {levels.map((l) => (
-            <Chip key={l} label={l} selected={data.englishLevel === l} onClick={() => onChange({ englishLevel: l })} />
-          ))}
-        </div>
-        <p className="text-xs text-[var(--text-tertiary)] mt-2">Не уверен? Выбери примерно</p>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">Достижения</label>
-        <div className="flex flex-wrap gap-2">
-          {achievements.map((a) => (
-            <Chip key={a} label={a} selected={data.achievements.includes(a)} onClick={() => onChange({ achievements: toggle(data.achievements, a) })} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ── Step 3 ── */
-function Step3({ data, onChange }: { data: StudentProfile; onChange: (d: Partial<StudentProfile>) => void }) {
-  const types = [
-    { id: "grant", label: "🎓 Гранты на учёбу" },
-    { id: "exchange", label: "✈️ Программы обмена" },
-    { id: "science", label: "🔬 Научные программы" },
-    { id: "internship", label: "💼 Стажировки" },
-    { id: "olympiad", label: "🏆 Олимпиады" },
-    { id: "summer_school", label: "🌍 Летние школы" },
-  ];
-  const countries = ["США", "Германия", "Великобритания", "Южная Корея", "Сингапур", "Нидерланды", "Канада", "Австрия"];
-  const horizons = ["Этот год", "Следующий год", "Оба"];
-
-  return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Тип программ</label>
-        <p className="text-xs text-[var(--text-tertiary)] mb-3">Выбери всё, что интересно</p>
-        <div className="flex flex-wrap gap-2">
-          {types.map((t) => (
-            <Chip key={t.id} label={t.label} selected={data.targetTypes.includes(t.id)} onClick={() => onChange({ targetTypes: toggle(data.targetTypes, t.id) })} />
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">Страны интереса</label>
-        <div className="flex flex-wrap gap-2">
-          {countries.map((c) => (
-            <Chip key={c} label={c} selected={data.targetCountries.includes(c)} onClick={() => onChange({ targetCountries: toggle(data.targetCountries, c) })} />
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">Горизонт планирования</label>
-        <div className="flex flex-wrap gap-2">
-          {horizons.map((h) => (
-            <Chip key={h} label={h} selected={data.horizon === h} onClick={() => onChange({ horizon: h })} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ── Step 4 ── */
-function Step4({ data, onChange }: { data: StudentProfile; onChange: (d: Partial<StudentProfile>) => void }) {
-  const frequencies = [
-    { id: "immediate", label: "Сразу как найду" },
-    { id: "weekly", label: "Раз в неделю" },
-    { id: "important", label: "Только важное" },
-  ];
-
-  return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">WhatsApp</label>
-        <input
-          value={data.whatsapp}
-          onChange={(e) => onChange({ whatsapp: e.target.value })}
-          placeholder="+7 777 123 45 67"
-          type="tel"
-          className="w-full border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:border-[var(--green-400)] focus:ring-2 focus:ring-[var(--green-400)]/20 outline-none transition-all"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Telegram</label>
-        <input
-          value={data.telegram}
-          onChange={(e) => onChange({ telegram: e.target.value })}
-          placeholder="@username"
-          className="w-full border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:border-[var(--green-400)] focus:ring-2 focus:ring-[var(--green-400)]/20 outline-none transition-all"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Email</label>
-        <input
-          value={data.email}
-          onChange={(e) => onChange({ email: e.target.value })}
-          placeholder="твой@email.kz"
-          type="email"
-          className="w-full border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:border-[var(--green-400)] focus:ring-2 focus:ring-[var(--green-400)]/20 outline-none transition-all"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[var(--text-primary)] mb-3">Частота алертов</label>
-        <div className="flex flex-wrap gap-2">
-          {frequencies.map((f) => (
-            <Chip key={f.id} label={f.label} selected={data.alertFrequency === f.id} onClick={() => onChange({ alertFrequency: f.id })} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ── Final screen ── */
-function FinalScreen({ name }: { name: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
-      className="flex flex-col items-center text-center gap-6 py-8"
-    >
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
-        className="w-20 h-20 rounded-full bg-[var(--green-50)] flex items-center justify-center"
-      >
-        <Check size={36} className="text-[var(--green-600)]" strokeWidth={2.5} />
-      </motion.div>
-
-      <div>
-        <h2
-          className="display-md text-[var(--text-primary)] mb-3"
-        >
-          Отлично{name ? `, ${name}` : ""}!
-        </h2>
-        <p className="text-[var(--text-secondary)] body-md">
-          Анализирую программы для тебя...
-        </p>
-      </div>
-
-      <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
-        <Loader2 size={16} className="animate-spin" />
-        AI подбирает твои матчи
-      </div>
-    </motion.div>
-  );
-}
-
-/* ── Main onboarding ── */
-const STEP_TITLES = [
-  "Расскажи о себе",
-  "Твои сильные стороны",
-  "Что тебя интересует?",
-  "Как тебя найти?",
-];
-
-const STEP_SUBTITLES = [
-  "Начнём с базовой информации — это займёт 1 минуту",
-  "Выбери предметы, уровень английского и достижения",
-  "Какие программы и страны тебя интересуют?",
-  "Выбери, куда присылать алерты о новых программах",
-];
 
 function OnboardingContent() {
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState(0);
-  const [dir, setDir] = useState(1);
-  const [data, setData] = useState<StudentProfile>({
-    ...INITIAL,
+  const [direction, setDirection] = useState(1);
+
+  const [profile, setProfile] = useState<StudentProfileInput>({
     email: searchParams.get("email") || "",
+    name: "",
+    phone: "",
+    schoolType: "",
+    schoolName: "",
+    city: "",
+    grade: "",
+    gpa: undefined,
+    subjects: [],
+    englishLevel: "",
+    englishTestType: "",
+    englishTestScore: undefined,
+    satScore: undefined,
+    olympiads: [],
+    awards: [],
+    achievements: [],
+    passportStatus: "",
+    hasMotivationLetters: false,
+    hasRecommendationLetters: false,
+    needsFinancialAid: false,
+    visaRejections: false,
+    targetTypes: [],
+    targetCountries: [],
+    studyFields: [],
+    timeline: "",
+    endGoal: "",
+    whatsapp: "",
+    telegram: "",
+    alertFrequency: "weekly",
+    minMatchScore: 70,
   });
-  const [done, setDone] = useState(false);
 
-  const update = (patch: Partial<StudentProfile>) => setData((d) => ({ ...d, ...patch }));
+  const update = useCallback(
+    <K extends keyof StudentProfileInput>(key: K, value: StudentProfileInput[K]) => {
+      setProfile((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
 
-  const goNext = () => {
-    if (step < 3) {
-      setDir(1);
-      setStep((s) => s + 1);
+  const toggleArray = useCallback(
+    (key: "subjects" | "targetTypes" | "targetCountries" | "awards" | "achievements" | "studyFields", value: string) => {
+      setProfile((prev) => {
+        const arr = (prev[key] as string[]) || [];
+        return {
+          ...prev,
+          [key]: arr.includes(value)
+            ? arr.filter((v) => v !== value)
+            : [...arr, value],
+        };
+      });
+    },
+    []
+  );
+
+  const next = () => {
+    if (step === 0) {
+      if (!profile.schoolName || !profile.city) {
+        alert("Пожалуйста, выбери школу и город перед продолжением.");
+        return;
+      }
+    }
+    
+    if (step < 5) {
+      setDirection(1);
+      setStep(step + 1);
     } else {
-      setDone(true);
-      setTimeout(() => router.push("/dashboard"), 3000);
+      // Save profile
+      localStorage.setItem("missio_profile", JSON.stringify(profile));
+      router.push("/programs");
     }
   };
 
-  const goBack = () => {
-    setDir(-1);
-    setStep((s) => s - 1);
+  const prev = () => {
+    if (step > 0) {
+      setDirection(-1);
+      setStep(step - 1);
+    }
   };
 
-  const progress = ((step + 1) / 4) * 100;
+  const chipClass = (isActive: boolean) =>
+    `px-3 py-2 text-sm border border-[var(--border)] cursor-pointer transition-colors font-mono-c ${
+      isActive
+        ? "bg-[var(--foreground)] text-[var(--background)]"
+        : "bg-[var(--background)] hover:bg-[var(--foreground)] hover:text-[var(--background)]"
+    }`;
 
-  if (done) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-secondary)]">
-        <div className="bg-white rounded-3xl shadow-lg border border-[var(--border)] p-8 w-full max-w-md mx-4">
-          <FinalScreen name={data.name} />
-        </div>
-      </div>
-    );
-  }
+  const inputClass =
+    "w-full border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-3 font-mono-c text-sm outline-none focus:border-[#1B3BFF] transition-colors";
 
   return (
-    <div className="min-h-screen bg-[var(--bg-secondary)] flex flex-col">
-      {/* Top bar */}
-      <header className="bg-white border-b border-[var(--border)] px-4 py-4">
-        <div className="max-w-xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <Link href="/" className="text-lg font-normal text-[var(--text-primary)]" style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif" }}>
-              Missio<span className="text-[var(--green-400)]">•</span>
-            </Link>
-            <span className="text-sm text-[var(--text-tertiary)]">Шаг {step + 1} из 4</span>
-          </div>
-          {/* Progress bar */}
-          <div className="w-full h-1 bg-[var(--gray-100)] rounded-full overflow-hidden">
-            <motion.div
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
-              className="h-full bg-[var(--green-400)] rounded-full"
-            />
-          </div>
+    <div className="min-h-screen bg-[var(--background)] flex flex-col">
+      {/* Header */}
+      <header className="border-b border-[var(--border)] px-6 py-4">
+        <div className="max-w-3xl mx-auto flex items-center justify-between">
+          <button
+            onClick={() => router.push("/")}
+            className="font-mono-c text-[11px] uppercase opacity-60 hover:opacity-100 transition-opacity"
+          >
+            ← MISSIO
+          </button>
+          <span className="font-mono-c text-[11px] uppercase opacity-60">
+            Шаг {step + 1} из 6
+          </span>
         </div>
       </header>
 
-      {/* Content */}
-      <div className="flex-1 flex items-start justify-center px-4 py-10">
-        <div className="w-full max-w-xl">
-          {/* Step header */}
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
-            <h1
-              className="text-3xl text-[var(--text-primary)] mb-2"
-              style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif", letterSpacing: "-0.5px" }}
-            >
-              {STEP_TITLES[step]}
-            </h1>
-            <p className="text-sm text-[var(--text-secondary)]">{STEP_SUBTITLES[step]}</p>
-          </motion.div>
-
-          {/* Step content with slide animation */}
-          <div className="overflow-hidden">
-            <AnimatePresence custom={dir} mode="wait">
-              <motion.div
-                key={step}
-                custom={dir}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-              >
-                {step === 0 && <Step1 data={data} onChange={update} />}
-                {step === 1 && <Step2 data={data} onChange={update} />}
-                {step === 2 && <Step3 data={data} onChange={update} />}
-                {step === 3 && <Step4 data={data} onChange={update} />}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-10">
-            {step > 0 ? (
-              <button
-                onClick={goBack}
-                className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
-              >
-                <ArrowLeft size={16} />
-                Назад
-              </button>
-            ) : (
-              <div />
-            )}
-            <Button onClick={goNext} size="md" className="group">
-              {step < 3 ? "Далее" : "Завершить"}
-              <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
-            </Button>
+      {/* Progress bar */}
+      <div className="border-b border-[var(--border)]">
+        <div className="max-w-3xl mx-auto">
+          <div className="h-[2px] bg-[var(--border)]">
+            <motion.div
+              className="h-full bg-[#1B3BFF]"
+              initial={{ width: 0 }}
+              animate={{ width: `${((step + 1) / 6) * 100}%` }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] as const }}
+            />
           </div>
         </div>
       </div>
+
+      {/* Step indicators */}
+      <div className="border-b border-[var(--border)] px-6 py-4 overflow-x-auto">
+        <div className="max-w-3xl mx-auto flex gap-1">
+          {STEPS.map((s, i) => {
+            const Icon = s.icon;
+            const isActive = i === step;
+            const isDone = i < step;
+            return (
+              <button
+                key={i}
+                onClick={() => { setDirection(i > step ? 1 : -1); setStep(i); }}
+                className={`flex items-center gap-2 px-3 py-2 text-xs font-mono-c uppercase transition-all flex-shrink-0 ${
+                  isActive
+                    ? "bg-[var(--foreground)] text-[var(--background)]"
+                    : isDone
+                    ? "opacity-80"
+                    : "opacity-40"
+                }`}
+              >
+                {isDone ? <Check size={12} /> : <Icon size={12} />}
+                <span className="hidden sm:inline">{s.title}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 px-6 py-12">
+        <div className="max-w-3xl mx-auto">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+            >
+              <h2 className="font-display font-bold text-3xl mb-2">{STEPS[step].title}</h2>
+              <p className="font-mono-c text-[11px] uppercase opacity-60 mb-10">{STEPS[step].subtitle}</p>
+
+              {step === 0 && (
+                <div className="flex flex-col gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Имя</label>
+                      <input className={inputClass} value={profile.name || ""} onChange={(e) => update("name", e.target.value)} placeholder="Аружан" />
+                    </div>
+                    <div>
+                      <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Email</label>
+                      <input className={inputClass} type="email" value={profile.email || ""} onChange={(e) => update("email", e.target.value)} placeholder="aruzhan@email.kz" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Телефон</label>
+                    <input className={inputClass} type="tel" value={profile.phone || ""} onChange={(e) => update("phone", e.target.value)} placeholder="+7 (7xx) xxx-xx-xx" />
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Тип школы</label>
+                    <div className="flex flex-wrap gap-2">
+                      {SCHOOL_TYPES.map((t) => (
+                        <button key={t.value} type="button" className={chipClass(profile.schoolType === t.value)} onClick={() => update("schoolType", t.value)}>
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Школа</label>
+                    <select className={inputClass} value={profile.schoolName || ""} onChange={(e) => update("schoolName", e.target.value)}>
+                      <option value="">Выбери школу</option>
+                      {KZ_SCHOOLS.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Город</label>
+                      <select className={inputClass} value={profile.city || ""} onChange={(e) => update("city", e.target.value)}>
+                        <option value="">Выбери город</option>
+                        {KZ_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Класс</label>
+                      <div className="flex gap-2">
+                        {["8", "9", "10", "11"].map((g) => (
+                          <button key={g} type="button" className={chipClass(profile.grade === g)} onClick={() => update("grade", g)}>
+                            {g}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === 1 && (
+                <div className="flex flex-col gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">GPA / Средний балл</label>
+                      <input className={inputClass} type="number" step="0.1" min="1" max="5" value={profile.gpa || ""} onChange={(e) => update("gpa", parseFloat(e.target.value) || undefined)} placeholder="4.5" />
+                    </div>
+                    <div>
+                      <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">SAT (если есть)</label>
+                      <input className={inputClass} type="number" min="400" max="1600" value={profile.satScore || ""} onChange={(e) => update("satScore", parseInt(e.target.value) || undefined)} placeholder="1400" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Лучшие предметы</label>
+                    <div className="flex flex-wrap gap-2">
+                      {SUBJECTS.map((s) => (
+                        <button key={s} type="button" className={chipClass(profile.subjects?.includes(s) || false)} onClick={() => toggleArray("subjects", s)}>
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Уровень английского</label>
+                    <div className="flex gap-2">
+                      {["A1", "A2", "B1", "B2", "C1", "C2"].map((l) => (
+                        <button key={l} type="button" className={chipClass(profile.englishLevel === l)} onClick={() => update("englishLevel", l)}>
+                          {l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Тест по английскому</label>
+                      <select className={inputClass} value={profile.englishTestType || ""} onChange={(e) => update("englishTestType", e.target.value)}>
+                        <option value="">Нет теста</option>
+                        <option value="IELTS">IELTS</option>
+                        <option value="TOEFL">TOEFL</option>
+                        <option value="Duolingo">Duolingo English Test</option>
+                        <option value="Cambridge">Cambridge</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Балл</label>
+                      <input className={inputClass} type="number" step="0.5" value={profile.englishTestScore || ""} onChange={(e) => update("englishTestScore", parseFloat(e.target.value) || undefined)} placeholder="7.0" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="flex flex-col gap-5">
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Олимпиады и конкурсы (по одной через запятую)</label>
+                    <textarea className={`${inputClass} min-h-[80px]`} value={profile.achievements?.join(", ") || ""} onChange={(e) => update("achievements", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="IMO — золото 2025, республиканская олимпиада по физике — 1 место" />
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Награды и грамоты</label>
+                    <textarea className={`${inputClass} min-h-[80px]`} value={profile.awards?.join(", ") || ""} onChange={(e) => update("awards", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="Лучший студент года, грант акимата" />
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Волонтёрские часы</label>
+                    <input className={inputClass} type="number" min="0" value={profile.volunteerHours || ""} onChange={(e) => update("volunteerHours", parseInt(e.target.value) || undefined)} placeholder="150" />
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Лидерские позиции</label>
+                    <textarea className={`${inputClass} min-h-[60px]`} value={profile.leadershipPositions?.join(", ") || ""} onChange={(e) => update("leadershipPositions", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="Президент дебатного клуба, капитан школьной команды по робототехнике" />
+                  </div>
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className="flex flex-col gap-5">
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Статус паспорта</label>
+                    <div className="flex flex-wrap gap-2">
+                      {["Есть действующий", "Нужно обновить", "Нет паспорта"].map((s) => (
+                        <button key={s} type="button" className={chipClass(profile.passportStatus === s)} onClick={() => update("passportStatus", s)}>{s}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input type="checkbox" checked={profile.hasMotivationLetters || false} onChange={(e) => update("hasMotivationLetters", e.target.checked)} className="w-4 h-4 accent-[#1B3BFF]" />
+                      <span className="font-mono-c text-sm">Есть готовые мотивационные письма</span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input type="checkbox" checked={profile.hasRecommendationLetters || false} onChange={(e) => update("hasRecommendationLetters", e.target.checked)} className="w-4 h-4 accent-[#1B3BFF]" />
+                      <span className="font-mono-c text-sm">Есть рекомендательные письма</span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input type="checkbox" checked={profile.needsFinancialAid || false} onChange={(e) => update("needsFinancialAid", e.target.checked)} className="w-4 h-4 accent-[#1B3BFF]" />
+                      <span className="font-mono-c text-sm">Нужна финансовая помощь / полное покрытие</span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input type="checkbox" checked={profile.visaRejections || false} onChange={(e) => update("visaRejections", e.target.checked)} className="w-4 h-4 accent-[#1B3BFF]" />
+                      <span className="font-mono-c text-sm">Были отказы в визе ранее</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {step === 4 && (
+                <div className="flex flex-col gap-5">
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Какие программы интересуют</label>
+                    <div className="flex flex-wrap gap-2">
+                      {PROGRAM_TYPES.map((t) => (
+                        <button key={t.value} type="button" className={chipClass(profile.targetTypes?.includes(t.value) || false)} onClick={() => toggleArray("targetTypes", t.value)}>
+                          {t.icon} {t.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Целевые страны</label>
+                    <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+                      {COUNTRIES.map((c) => (
+                        <button key={c.code} type="button" className={chipClass(profile.targetCountries?.includes(c.label) || false)} onClick={() => toggleArray("targetCountries", c.label)}>
+                          {c.flag} {c.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Направление учёбы</label>
+                    <div className="flex flex-wrap gap-2">
+                      {["STEM", "Медицина", "Бизнес", "Гуманитарные", "Искусство", "Право", "IT", "Инженерия"].map((f) => (
+                        <button key={f} type="button" className={chipClass(profile.studyFields?.includes(f) || false)} onClick={() => toggleArray("studyFields", f)}>
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Конечная цель</label>
+                    <select className={inputClass} value={profile.endGoal || ""} onChange={(e) => update("endGoal", e.target.value)}>
+                      <option value="">Выбери цель</option>
+                      <option value="top_uni">Поступление в топ-университет</option>
+                      <option value="experience">Международный опыт</option>
+                      <option value="career">Карьера за рубежом</option>
+                      <option value="research">Научная карьера</option>
+                      <option value="startup">Предпринимательство</option>
+                      <option value="undecided">Ещё не определился</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {step === 5 && (
+                <div className="flex flex-col gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">WhatsApp (+7...)</label>
+                      <input className={inputClass} type="tel" value={profile.whatsapp || ""} onChange={(e) => update("whatsapp", e.target.value)} placeholder="+7 7xx xxx xx xx" />
+                    </div>
+                    <div>
+                      <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Telegram (@username)</label>
+                      <input className={inputClass} value={profile.telegram || ""} onChange={(e) => update("telegram", e.target.value)} placeholder="@username" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-2 block">Частота уведомлений</label>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { value: "realtime", label: "Мгновенно" },
+                        { value: "daily", label: "Раз в день" },
+                        { value: "weekly", label: "Раз в неделю" },
+                        { value: "monthly", label: "Раз в месяц" },
+                      ].map((f) => (
+                        <button key={f.value} type="button" className={chipClass(profile.alertFrequency === f.value)} onClick={() => update("alertFrequency", f.value)}>
+                          {f.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-mono-c text-[10px] uppercase opacity-60 mb-1 block">Минимальный балл совместимости: {profile.minMatchScore || 70}%</label>
+                    <input
+                      type="range"
+                      min="30"
+                      max="95"
+                      step="5"
+                      value={profile.minMatchScore || 70}
+                      onChange={(e) => update("minMatchScore", parseInt(e.target.value))}
+                      className="w-full accent-[#1B3BFF]"
+                    />
+                    <div className="flex justify-between text-[10px] font-mono-c opacity-40">
+                      <span>30%</span><span>95%</span>
+                    </div>
+                  </div>
+                  <div className="border border-[var(--border)] p-4 mt-4">
+                    <p className="font-mono-c text-[11px] uppercase opacity-60 mb-2">Итого</p>
+                    <p className="font-display text-sm leading-relaxed opacity-80">
+                      {profile.name || "—"} · {profile.schoolType || "—"} · {profile.grade ? `${profile.grade} класс` : "—"} · {profile.englishLevel || "—"} · {profile.targetTypes?.length || 0} типов · {profile.targetCountries?.length || 0} стран
+                    </p>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <footer className="border-t border-[var(--border)] px-6 py-4">
+        <div className="max-w-3xl mx-auto flex justify-between">
+          <button
+            onClick={prev}
+            disabled={step === 0}
+            className="flex items-center gap-2 font-mono-c text-sm uppercase px-6 py-3 border border-[var(--border)] disabled:opacity-30 hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-colors"
+          >
+            <ArrowLeft size={14} /> Назад
+          </button>
+          <button
+            onClick={next}
+            className="flex items-center gap-2 font-mono-c text-sm uppercase px-6 py-3 bg-[var(--foreground)] text-[var(--background)] border border-[var(--border)] hover:bg-[#1B3BFF] transition-colors"
+          >
+            {step === 5 ? "Готово" : "Далее"} {step === 5 ? <Check size={14} /> : <ArrowRight size={14} />}
+          </button>
+        </div>
+      </footer>
     </div>
   );
 }
 
 export default function OnboardingPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-secondary)]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center"><span className="font-mono-c text-sm opacity-40">Загрузка...</span></div>}>
       <OnboardingContent />
     </Suspense>
   );

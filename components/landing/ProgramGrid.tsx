@@ -1,291 +1,125 @@
-﻿"use client";
+"use client";
 
-import { useState, useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { Clock, Globe, ArrowRight } from "lucide-react";
-import Badge from "@/components/ui/Badge";
-import Modal from "@/components/ui/Modal";
-import Button from "@/components/ui/Button";
+import { useState } from "react";
 import Link from "next/link";
-import { getProgramTypeLabel, getProgramTypeBadgeVariant } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { PROGRAMS as ALL_PROGRAMS } from "@/lib/programs-data";
+import { getDaysUntilDeadline, getProgramTypeLabel } from "@/lib/utils";
 
-const PROGRAMS = [
-  {
-    id: "flex",
-    name: "FLEX — Future Leaders Exchange",
-    org: "Государственный департамент США",
-    type: "exchange",
-    country: "США",
-    flag: "🇺🇸",
-    deadline: "2026-09-15",
-    daysLeft: 21,
-    english: "B2+",
-    grade: "10–11",
-    urgency: "soon",
-    featured: true,
-  },
-  {
-    id: "bolashak",
-    name: "Болашак Youth",
-    org: "Центр Болашак",
-    type: "grant",
-    country: "Международная",
-    flag: "🇰🇿",
-    deadline: "2026-09-18",
-    daysLeft: 18,
-    english: "B1+",
-    grade: "9–11",
-    urgency: "soon",
-    featured: false,
-  },
-  {
-    id: "deutsche",
-    name: "Deutsche Schülerakademie",
-    org: "Bildung & Begabung",
-    type: "summer_school",
-    country: "Германия",
-    flag: "🇩🇪",
-    deadline: "2026-11-10",
-    daysLeft: 60,
-    english: "B2",
-    grade: "10–11",
-    urgency: "ok",
-    featured: false,
-  },
-  {
-    id: "mit-primes",
-    name: "MIT PRIMES",
-    org: "Massachusetts Institute of Technology",
-    type: "internship",
-    country: "США",
-    flag: "🇺🇸",
-    deadline: "2026-10-25",
-    daysLeft: 45,
-    english: "C1",
-    grade: "9–11",
-    urgency: "ok",
-    featured: false,
-  },
-  {
-    id: "yes",
-    name: "YES — Youth Exchange & Study",
-    org: "Государственный департамент США",
-    type: "exchange",
-    country: "США",
-    flag: "🇺🇸",
-    deadline: "2026-09-05",
-    daysLeft: 3,
-    english: "B2",
-    grade: "9–11",
-    urgency: "critical",
-    featured: false,
-  },
-  {
-    id: "science-olympiad",
-    name: "Science Olympiad KZ",
-    org: "Министерство образования РК",
-    type: "olympiad",
-    country: "Казахстан",
-    flag: "🇰🇿",
-    deadline: "2026-09-07",
-    daysLeft: 5,
-    english: "A2+",
-    grade: "8–11",
-    urgency: "critical",
-    featured: false,
-  },
-];
-
-const FILTERS = ["Все", "Гранты", "Стажировки", "Олимпиады", "Летние школы", "Обмен"];
-const filterMap: Record<string, string> = {
-  Все: "all",
-  Гранты: "grant",
-  Стажировки: "internship",
-  Олимпиады: "olympiad",
-  "Летние школы": "summer_school",
-  Обмен: "exchange",
+const FILTERS = ["Все", "Обмен", "Стипендии", "Стажировки", "Олимпиады", "Летние"];
+const TYPE_MAP: Record<string, string[]> = {
+  "Обмен": ["exchange"],
+  "Стипендии": ["scholarship", "grant"],
+  "Стажировки": ["internship"],
+  "Олимпиады": ["olympiad", "competition"],
+  "Летние": ["summer_school", "summer_camp"],
 };
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] } },
+// Get featured/popular programs for the landing page
+const FEATURED = ALL_PROGRAMS.filter((p) => p.isFeatured || p.isPopular).slice(0, 9);
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] as const },
+  }),
 };
-const stagger = { visible: { transition: { staggerChildren: 0.07 } } };
-
-function DeadlineBar({ daysLeft, urgency }: { daysLeft: number; urgency: string }) {
-  const width = Math.max(10, Math.min(100, (daysLeft / 90) * 100));
-  const color =
-    urgency === "critical" ? "#EF4444" : urgency === "soon" ? "#F59E0B" : "var(--green-400)";
-
-  return (
-    <div className="w-full bg-[var(--gray-100)] rounded-full h-1.5 mt-2">
-      <motion.div
-        initial={{ width: 0 }}
-        animate={{ width: `${width}%` }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
-        className="h-1.5 rounded-full"
-        style={{ background: color }}
-      />
-    </div>
-  );
-}
 
 export default function ProgramGrid() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
-  const [activeFilter, setActiveFilter] = useState("Все");
-  const [signupModal, setSignupModal] = useState(false);
+  const [active, setActive] = useState("Все");
 
-  const filtered =
-    filterMap[activeFilter] === "all"
-      ? PROGRAMS
-      : PROGRAMS.filter((p) => p.type === filterMap[activeFilter]);
+  const filtered = active === "Все"
+    ? FEATURED
+    : FEATURED.filter((p) => TYPE_MAP[active]?.includes(p.type));
+
+  const displayPrograms = filtered.length > 0 ? filtered : FEATURED.slice(0, 6);
 
   return (
-    <section id="programs" ref={ref} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <motion.div
-        variants={stagger}
-        initial="hidden"
-        animate={inView ? "visible" : "hidden"}
-        className="text-center mb-12"
-      >
-        <motion.span variants={fadeUp} className="label text-[var(--text-tertiary)]">
-          Живые матчи
-        </motion.span>
-        <motion.h2 variants={fadeUp} className="display-md text-[var(--text-primary)] mt-3">
-          Программы прямо сейчас
-        </motion.h2>
-        <motion.p variants={fadeUp} className="body-md text-[var(--text-secondary)] mt-3">
-          Программы, которые подходят школьникам — обновляется еженедельно
-        </motion.p>
-      </motion.div>
-
-      {/* Filters */}
-      <motion.div
-        variants={stagger}
-        initial="hidden"
-        animate={inView ? "visible" : "hidden"}
-        className="flex flex-wrap gap-2 justify-center mb-10"
-      >
-        {FILTERS.map((f) => (
-          <motion.button
-            key={f}
-            variants={fadeUp}
-            onClick={() => setActiveFilter(f)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-              activeFilter === f
-                ? "bg-[var(--green-400)] text-white shadow-sm"
-                : "border border-[var(--border)] bg-white text-[var(--text-secondary)] hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]"
-            }`}
-          >
-            {f}
-          </motion.button>
-        ))}
-      </motion.div>
-
-      {/* Grid */}
-      <motion.div
-        variants={stagger}
-        initial="hidden"
-        animate={inView ? "visible" : "hidden"}
-        className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
-      >
-        {filtered.map((program) => (
-          <motion.div
-            key={program.id}
-            variants={fadeUp}
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="bg-white border border-[var(--border)] rounded-2xl p-5 hover:border-[var(--border-hover)] hover:shadow-md transition-all duration-300 group"
-          >
-            {/* Header */}
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xl">{program.flag}</span>
-                <Badge variant={getProgramTypeBadgeVariant(program.type)}>
-                  {getProgramTypeLabel(program.type)}
-                </Badge>
-              </div>
-              {program.urgency === "critical" && (
-                <Badge variant="red" className="shrink-0">Срочно</Badge>
-              )}
-            </div>
-
-            {/* Title */}
-            <h3 className="font-semibold text-[var(--text-primary)] leading-tight mb-1 line-clamp-2">
-              {program.name}
-            </h3>
-            <p className="text-xs text-[var(--text-tertiary)] mb-4">{program.org}</p>
-
-            {/* Meta */}
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-secondary)] mb-4">
-              <span className="flex items-center gap-1">
-                <Clock size={11} />
-                {program.daysLeft === 0
-                  ? "Сегодня"
-                  : `${program.daysLeft} дн.`}
-              </span>
-              <span className="flex items-center gap-1">
-                <Globe size={11} />
-                {program.english}
-              </span>
-              <span>{program.grade} класс</span>
-            </div>
-
-            {/* Deadline bar */}
-            <DeadlineBar daysLeft={program.daysLeft} urgency={program.urgency} />
-
-            {/* CTA */}
-            <button
-              onClick={() => setSignupModal(true)}
-              className="mt-4 w-full py-2.5 text-sm font-medium border border-[var(--border)] rounded-xl hover:bg-[var(--green-50)] hover:border-[var(--green-400)]/30 hover:text-[var(--green-600)] transition-all duration-200 flex items-center justify-center gap-1.5 group-hover:border-[var(--green-400)]/30"
-            >
-              Узнать совместимость
-              <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-            </button>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* See all */}
-      <motion.div
-        variants={fadeUp}
-        initial="hidden"
-        animate={inView ? "visible" : "hidden"}
-        className="text-center mt-10"
-      >
-        <Link href="/programs">
-          <Button variant="secondary" size="md" className="group">
-            Смотреть все 200+ программ
-            <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
-          </Button>
-        </Link>
-      </motion.div>
-
-      {/* Signup modal */}
-      <Modal
-        open={signupModal}
-        onClose={() => setSignupModal(false)}
-        title="Узнай свою совместимость"
-      >
-        <div className="flex flex-col gap-4">
-          <p className="text-sm text-[var(--text-secondary)]">
-            Создай профиль бесплатно и получи персональный матч — AI подберёт программы именно для тебя
-            с объяснением, почему ты подходишь.
-          </p>
-          <Link href="/onboarding" onClick={() => setSignupModal(false)}>
-            <Button className="w-full" size="lg">
-              Создать профиль бесплатно
-            </Button>
-          </Link>
-          <p className="text-center text-xs text-[var(--text-tertiary)]">
-            Уже есть аккаунт?{" "}
-            <Link href="/login" className="text-[var(--green-600)] hover:underline">
-              Войти
-            </Link>
-          </p>
+    <section id="programs" className="border-b border-[var(--border)]">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 py-24">
+        <p className="font-mono-c text-[11px] uppercase mb-6 opacity-60">§ 02 · {ALL_PROGRAMS.length} программ</p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+          <h2 className="font-display font-bold tight text-[40px] md:text-[56px]">
+            Программы
+          </h2>
+          <div className="flex gap-0 relative">
+            {FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => setActive(f)}
+                className={`font-mono-c text-[11px] uppercase px-4 py-2 border border-[var(--border)] -ml-px first:ml-0 transition-colors relative ${
+                  active === f
+                    ? "bg-[var(--foreground)] text-[var(--background)]"
+                    : "hover:bg-[var(--foreground)] hover:text-[var(--background)]"
+                }`}
+              >
+                {f}
+                {/* Sliding underline indicator */}
+                {active === f && (
+                  <motion.div
+                    layoutId="filter-underline"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1B3BFF]"
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
-      </Modal>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 border-l border-t border-[var(--border)]">
+          {displayPrograms.map((p, i) => {
+            const days = getDaysUntilDeadline(p.deadline);
+            const urgencyDot = days <= 7 ? "bg-red-500" : days <= 21 ? "bg-amber-500" : "bg-green-500";
+
+            return (
+              <motion.div
+                key={p.id}
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-30px" }}
+                custom={i}
+              >
+                <Link
+                  href={`/programs/${p.id}`}
+                  className="border-r border-b border-[var(--border)] p-8 hover:bg-[var(--foreground)] hover:text-[var(--background)] group block transition-all hover:shadow-[inset_0_0_0_2px_#1B3BFF]"
+                >
+                  <div className="flex justify-between items-start mb-10">
+                    <span className="font-mono-c text-[11px] uppercase opacity-60">
+                      {getProgramTypeLabel(p.type)}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {/* Pulsing urgency dot */}
+                      <span className={`w-2 h-2 rounded-full ${urgencyDot} ${days <= 7 ? "animate-pulse-dot" : ""}`} />
+                      <span className={`font-mono-c text-[10px] uppercase ${days <= 7 ? "text-[#1B3BFF]" : "opacity-40"}`}>
+                        {days < 0 ? "прошёл" : `${days}д`} →
+                      </span>
+                    </div>
+                  </div>
+                  <h3 className="font-display font-bold tight text-2xl md:text-3xl mb-2 line-clamp-2">{p.nameRu}</h3>
+                  <p className="font-mono-c text-[10px] uppercase opacity-50 mb-4">{p.country} · {p.organization}</p>
+                  <p className="font-display text-sm leading-relaxed opacity-70 line-clamp-2">{p.description}</p>
+                </Link>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div className="border border-t-0 border-[var(--border)] px-8 py-4 flex justify-between items-center">
+          <span className="font-mono-c text-[11px] uppercase opacity-60">
+            Показано {displayPrograms.length} из {ALL_PROGRAMS.length}
+          </span>
+          <Link
+            href="/programs"
+            className="font-mono-c text-[11px] uppercase hover:text-[var(--blue)] transition-colors"
+          >
+            Смотреть все →
+          </Link>
+        </div>
+      </div>
     </section>
   );
 }

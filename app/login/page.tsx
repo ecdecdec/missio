@@ -11,11 +11,28 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
+    setError(null);
+    
+    // Lazy import to avoid server-side issues if missing env vars during build
+    const { supabase } = await import("@/lib/supabase");
+    
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: form.email,
+      password: form.password,
+    });
+
     setLoading(false);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
     router.push("/dashboard");
   };
 
@@ -31,12 +48,13 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white border border-[var(--border)] rounded-2xl p-6 flex flex-col gap-4">
+          {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">{error}</div>}
           <Input
             label="Email"
             type="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            placeholder="твой@email.kz"
+            placeholder="you@example.com"
             required
           />
           <Input
@@ -53,7 +71,7 @@ export default function LoginPage() {
 
           <div className="text-center text-sm text-[var(--text-secondary)]">
             Нет аккаунта?{" "}
-            <Link href="/onboarding" className="text-[var(--green-600)] hover:underline font-medium">
+            <Link href="/register" className="text-[var(--green-600)] hover:underline font-medium">
               Зарегистрироваться
             </Link>
           </div>

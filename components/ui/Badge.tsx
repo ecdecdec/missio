@@ -1,28 +1,39 @@
-import { cn } from "@/lib/utils";
+import React from "react";
+import clsx from "clsx";
+
+type BadgeVariant = "green" | "amber" | "blue" | "coral" | "gray" | "red";
 
 interface BadgeProps {
-  variant?: "green" | "amber" | "blue" | "gray" | "coral" | "red";
-  className?: string;
+  variant?: BadgeVariant;
   children: React.ReactNode;
+  className?: string;
 }
 
-export default function Badge({ variant = "gray", className, children }: BadgeProps) {
+const variantClasses: Record<BadgeVariant, string> = {
+  green: "bg-[#E1F5EE] text-[#0F6E56]",
+  amber: "bg-[#FAEEDA] text-[#854F0B]",
+  blue: "bg-[#E6F1FB] text-[#185FA5]",
+  coral: "bg-[#FAECE7] text-[#993C1D]",
+  gray: "bg-[#F1EFE8] text-[#5F5E5A]",
+  red: "bg-[#FEE2E2] text-[#B91C1C]",
+};
+
+const Badge: React.FC<BadgeProps> = ({
+  variant = "gray",
+  children,
+  className,
+}) => {
   return (
     <span
-      className={cn(
-        "inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium",
-        {
-          "bg-[var(--green-50)] text-[var(--green-600)]": variant === "green",
-          "bg-amber-50 text-amber-700": variant === "amber",
-          "bg-blue-50 text-blue-700": variant === "blue",
-          "bg-[var(--gray-100)] text-[var(--gray-700)]": variant === "gray",
-          "bg-orange-50 text-orange-700": variant === "coral",
-          "bg-red-50 text-red-600": variant === "red",
-        },
+      className={clsx(
+        "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium",
+        variantClasses[variant],
         className
       )}
     >
       {children}
     </span>
   );
-}
+};
+
+export default Badge;

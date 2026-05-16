@@ -68,7 +68,7 @@ export default function OrgLandingPage() {
               <motion.h1 variants={fadeUp} className="display-xl text-white max-w-3xl">
                 Найдите лучших школьников Казахстана
               </motion.h1>
-              <motion.p variants={fadeUp} className="body-lg text-[var(--gray-400)] max-w-2xl">
+              <motion.p variants={fadeUp} className="body-lg max-w-2xl text-[var(--on-dark-muted)]">
                 Missio — прямой канал к 3000+ амбициозным школьникам КЗ. Публикуйте программы, находите идеальных аппликантов, получайте заявки.
               </motion.p>
               <motion.div variants={fadeUp} className="flex gap-3 flex-wrap justify-center">

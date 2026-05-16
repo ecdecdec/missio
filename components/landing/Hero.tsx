@@ -1,113 +1,12 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Zap, Clock, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Button from "@/components/ui/Button";
+import { PixelCanvas } from "@/components/landing/PixelCanvas";
+import TextScramble from "@/components/landing/TextScramble";
+import ParticleField from "@/components/landing/ParticleField";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] } },
-};
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
-};
-
-function AlertMockup() {
-  return (
-    <div className="relative w-full max-w-sm mx-auto">
-      {/* Background card (parallax) */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 0.5, y: 8, rotate: 2 }}
-        transition={{ delay: 1.4, duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
-        className="absolute inset-0 bg-white border border-[var(--border)] rounded-2xl shadow-sm"
-        style={{ transform: "rotate(3deg) translateY(12px)" }}
-      />
-
-      {/* Main alert card */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.7, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
-        className="relative bg-white border border-[var(--border)] rounded-2xl p-5 shadow-lg"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-[var(--green-400)] animate-pulse" />
-            <span className="text-xs font-medium text-[var(--green-600)]">Новый матч</span>
-          </div>
-          <div className="flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-1 rounded-full">
-            <Clock size={10} />
-            <span className="text-xs font-medium">18 дней</span>
-          </div>
-        </div>
-
-        {/* Program info */}
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-base">🇺🇸</span>
-            <span className="text-xs uppercase tracking-widest text-[var(--text-tertiary)] font-medium">Обмен</span>
-          </div>
-          <h3 className="font-semibold text-[var(--text-primary)] text-lg leading-tight">FLEX</h3>
-          <p className="text-sm text-[var(--text-secondary)] mt-0.5">Программа обмена для старшеклассников в США</p>
-        </div>
-
-        {/* Match score */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-[var(--text-secondary)]">Совместимость</span>
-            <span className="text-sm font-semibold text-[var(--green-600)]">94%</span>
-          </div>
-          <div className="w-full bg-[var(--gray-100)] rounded-full h-2">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: "94%" }}
-              transition={{ delay: 1.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
-              className="bg-[var(--green-400)] h-2 rounded-full"
-            />
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-2">
-          <button className="flex-1 py-2 text-xs font-medium border border-[var(--border)] rounded-xl hover:bg-[var(--bg-secondary)] transition-colors">
-            Подробнее
-          </button>
-          <button className="flex-1 py-2 text-xs font-medium bg-[var(--green-400)] text-white rounded-xl hover:bg-[var(--green-600)] transition-colors flex items-center justify-center gap-1">
-            <Star size={10} />
-            Добавить
-          </button>
-        </div>
-      </motion.div>
-
-      {/* Second card hint */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.6, duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
-        className="mt-3 bg-white border border-[var(--border)] rounded-2xl p-4 shadow-sm"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-base">🇩🇪</span>
-            <div>
-              <p className="text-sm font-medium text-[var(--text-primary)]">Deutsche Schülerakademie</p>
-              <p className="text-xs text-[var(--text-tertiary)]">60 дней · Совместимость 87%</p>
-            </div>
-          </div>
-          <div className="w-8 h-8 bg-[var(--green-50)] rounded-full flex items-center justify-center">
-            <ArrowRight size={14} className="text-[var(--green-600)]" />
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
+const ROTATING = ["ГРАНТ", "СТАЖИРОВКУ", "ПРОГРАММУ", "БУДУЩЕЕ", "ВЫЛЕТ"];
 
 export default function Hero() {
   const [email, setEmail] = useState("");
@@ -119,86 +18,175 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[var(--green-50)] via-white to-white pointer-events-none" />
-      <div
-        className="absolute top-0 right-0 w-96 h-96 bg-[var(--green-400)] opacity-5 rounded-full blur-3xl pointer-events-none"
-        style={{ transform: "translate(30%, -30%)" }}
-      />
+    <section className="relative border-b border-[var(--border)] overflow-hidden" id="hero">
+      {/* Particle canvas background */}
+      <div className="absolute inset-0 pointer-events-auto">
+        <ParticleField />
+      </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid lg:grid-cols-5 gap-12 lg:gap-20 items-center">
-          {/* Left column — 60% */}
-          <div className="lg:col-span-3">
-            <motion.div
-              variants={stagger}
-              initial="hidden"
-              animate="visible"
-              className="flex flex-col gap-6"
+      {/* Pixel canvas edges */}
+      <div className="absolute inset-0 opacity-90 pointer-events-none">
+        <PixelCanvas />
+      </div>
+
+      {/* Scanlines overlay — animated */}
+      <div className="absolute inset-0 scanlines pointer-events-none" style={{ animation: "scanlines-move 8s linear infinite" }} />
+
+      <div className="relative px-6 md:px-10 py-28 md:py-36 max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 md:gap-16 items-center">
+        <div>
+          {/* Eyebrow */}
+          <p className="font-mono-c text-[11px] uppercase mb-10 opacity-60 tracking-widest">
+            Архив образовательных возможностей · 2026
+          </p>
+
+          {/* Headline with scramble effect */}
+          <h1 className="font-display font-bold tight">
+            <span className="block text-[48px] md:text-[72px] leading-none">Найди свой</span>
+            <span className="block text-[40px] md:text-[64px] text-[#1B3BFF] leading-none mt-2">
+              [<TextScramble words={ROTATING} interval={2500} scrambleDuration={500} />]
+            </span>
+          </h1>
+
+          {/* Subheadline */}
+          <p className="font-display text-base md:text-lg mt-12 max-w-xl opacity-80 leading-relaxed">
+            12 400+ школьников. 580+ программ в базе.
+            AI с точностью 94% подбирает то, что подходит именно тебе.
+          </p>
+
+          {/* Email signup form */}
+          <form
+            id="start"
+            className="mt-12 flex flex-col sm:flex-row max-w-xl"
+            onSubmit={handleSubmit}
+          >
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="твой@email.kz"
+              required
+              className="flex-1 border border-[var(--border)] bg-white px-5 py-4 font-mono-c text-sm outline-none focus:border-[#1B3BFF] transition-colors"
+            />
+            <button
+              type="submit"
+              className="border border-[var(--border)] border-l-0 bg-[var(--foreground)] text-white px-8 py-4 font-mono-c text-sm uppercase hover:bg-[#1B3BFF] transition-colors"
             >
-              {/* Label */}
-              <motion.div variants={fadeUp}>
-                <span className="label text-[var(--green-600)] flex items-center gap-2">
-                  <Zap size={12} className="fill-current" />
-                  AI-матчинг для школьников Казахстана
-                </span>
-              </motion.div>
+              Начать →
+            </button>
+          </form>
 
-              {/* Headline */}
-              <motion.h1
-                variants={fadeUp}
-                className="display-xl text-[var(--text-primary)]"
-              >
-                Гранты и стажировки,{" "}
-                <em className="text-[var(--green-400)] not-italic" style={{ fontStyle: "italic" }}>
-                  которые ждут тебя
-                </em>
-              </motion.h1>
-
-              {/* Subtitle */}
-              <motion.p
-                variants={fadeUp}
-                className="body-lg text-[var(--text-secondary)] max-w-xl"
-              >
-                Заполни профиль один раз — узнай о подходящих программах за месяц до дедлайна.
-                Не случайно в чате, а персонально.
-              </motion.p>
-
-              {/* Email form */}
-              <motion.form
-                variants={fadeUp}
-                onSubmit={handleSubmit}
-                className="flex flex-col sm:flex-row gap-3 max-w-md"
-              >
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="твой@email.kz"
-                  required
-                  className="flex-1 border border-[var(--border)] rounded-full px-5 py-3 text-sm bg-white text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--green-400)] focus:ring-2 focus:ring-[var(--green-400)]/20 outline-none transition-all"
-                />
-                <Button type="submit" size="md" pulse className="whitespace-nowrap group">
-                  Получить доступ
-                  <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
-                </Button>
-              </motion.form>
-
-              {/* Social proof */}
-              <motion.p variants={fadeUp} className="text-sm text-[var(--text-tertiary)]">
-                Бесплатно ·{" "}
-                <span className="text-[var(--text-secondary)] font-medium">312 школьников</span>{" "}
-                уже ждут первых матчей
-              </motion.p>
-            </motion.div>
-          </div>
-
-          {/* Right column — 40% */}
-          <div className="lg:col-span-2">
-            <AlertMockup />
-          </div>
+          <p className="font-mono-c text-[10px] uppercase opacity-50 mt-4">
+            580+ программ · Бесплатно · Без спама
+          </p>
         </div>
+
+        {/* Right — Archive illustration with float + glitch */}
+        <figure className="relative hidden md:block w-[280px] lg:w-[320px] justify-self-end group">
+          <div
+            className="relative border border-[var(--border)] overflow-hidden"
+            style={{ animation: "float 4s ease-in-out infinite" }}
+          >
+            {/* SVG illustration */}
+            <div className="w-full aspect-square bg-[var(--bg)] flex items-center justify-center relative group-hover:animate-[glitch_0.3s_ease-in-out]">
+              {/* Rotating star */}
+              <div
+                className="absolute top-8 left-1/2 -translate-x-1/2 text-[#1B3BFF] text-3xl"
+                style={{ animation: "spin 6s linear infinite" }}
+              >
+                ✦
+              </div>
+
+              {/* Abstract winged figures */}
+              <svg viewBox="0 0 280 280" className="w-full h-full" aria-hidden="true">
+                {/* Left figure */}
+                <g transform="translate(60, 80)" opacity="0.9">
+                  <circle cx="20" cy="20" r="12" fill="none" stroke="#080808" strokeWidth="2" />
+                  <line x1="20" y1="32" x2="20" y2="100" stroke="#080808" strokeWidth="2" />
+                  <line x1="20" y1="50" x2="0" y2="70" stroke="#080808" strokeWidth="2" />
+                  <line x1="20" y1="50" x2="40" y2="70" stroke="#080808" strokeWidth="2" />
+                  {/* Wing left */}
+                  <path
+                    d="M 0 70 Q -30 40 -10 20 Q 0 35 10 45"
+                    fill="none"
+                    stroke="#1B3BFF"
+                    strokeWidth="1.5"
+                    opacity="0.7"
+                  />
+                  <path
+                    d="M 0 80 Q -40 50 -20 25 Q -5 45 5 55"
+                    fill="none"
+                    stroke="#1B3BFF"
+                    strokeWidth="1"
+                    opacity="0.4"
+                  />
+                </g>
+
+                {/* Right figure */}
+                <g transform="translate(180, 80)" opacity="0.9">
+                  <circle cx="20" cy="20" r="12" fill="none" stroke="#080808" strokeWidth="2" />
+                  <line x1="20" y1="32" x2="20" y2="100" stroke="#080808" strokeWidth="2" />
+                  <line x1="20" y1="50" x2="0" y2="70" stroke="#080808" strokeWidth="2" />
+                  <line x1="20" y1="50" x2="40" y2="70" stroke="#080808" strokeWidth="2" />
+                  {/* Wing right */}
+                  <path
+                    d="M 40 70 Q 70 40 50 20 Q 40 35 30 45"
+                    fill="none"
+                    stroke="#1B3BFF"
+                    strokeWidth="1.5"
+                    opacity="0.7"
+                  />
+                  <path
+                    d="M 40 80 Q 80 50 60 25 Q 45 45 35 55"
+                    fill="none"
+                    stroke="#1B3BFF"
+                    strokeWidth="1"
+                    opacity="0.4"
+                  />
+                </g>
+
+                {/* Center Missio text */}
+                <text
+                  x="140"
+                  y="230"
+                  textAnchor="middle"
+                  fontFamily="var(--font-space-grotesk), monospace"
+                  fontSize="24"
+                  fontWeight="700"
+                  fill="#1B3BFF"
+                  letterSpacing="8"
+                >
+                  MISSIO
+                </text>
+
+                {/* Connecting line between figures */}
+                <line
+                  x1="100"
+                  y1="130"
+                  x2="180"
+                  y2="130"
+                  stroke="#080808"
+                  strokeWidth="1"
+                  strokeDasharray="4,4"
+                  opacity="0.3"
+                />
+              </svg>
+            </div>
+
+            {/* Text overlay */}
+            <div
+              className="absolute bottom-0 left-0 right-0 px-5 py-4"
+              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%)" }}
+            >
+              <p className="font-mono-c text-[10px] uppercase text-white opacity-90">
+                архив возможностей · 2026
+              </p>
+            </div>
+          </div>
+          <figcaption className="font-mono-c text-[10px] uppercase opacity-50 mt-3 flex justify-between">
+            <span>fig. 001 / archive</span>
+            <span>↗ missio_2026.svg</span>
+          </figcaption>
+        </figure>
       </div>
     </section>
   );

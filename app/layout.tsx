@@ -1,28 +1,16 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Onest } from "next/font/google";
 import "./globals.css";
-
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
-});
-
-const onest = Onest({
-  variable: "--font-onest",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-});
+import SmoothScrollProvider from "@/components/layout/SmoothScrollProvider";
+import ScrollProgress from "@/components/layout/ScrollProgress";
 
 export const metadata: Metadata = {
-  title: "Missio — Гранты и стажировки для школьников Казахстана",
+  title: "MISSIO — найди свой грант",
   description:
-    "Персональный AI-агент для школьников: заполни профиль один раз и получай алерты о подходящих грантах, стажировках и программах обмена за месяц до дедлайна.",
+    "Архив образовательных возможностей. 12 400+ школьников, 580+ программ, 94% точность AI-подбора.",
   openGraph: {
-    title: "Missio",
-    description: "Гранты и стажировки, которые ждут тебя",
-    siteName: "Missio",
+    title: "MISSIO",
+    description: "Архив образовательных возможностей для школьников Казахстана",
+    siteName: "MISSIO",
     locale: "ru_KZ",
     type: "website",
   },
@@ -34,12 +22,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="ru"
-      className={`${instrumentSerif.variable} ${onest.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)]">
-        {children}
+    <html lang="ru">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="min-h-screen bg-[var(--bg-secondary)] text-[var(--foreground)] font-display antialiased">
+        <SmoothScrollProvider>
+          <ScrollProgress />
+          {children}
+        </SmoothScrollProvider>
       </body>
     </html>
   );

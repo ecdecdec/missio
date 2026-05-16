@@ -1,41 +1,89 @@
-import { forwardRef } from "react";
-import { cn } from "@/lib/utils";
+"use client";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+import React from "react";
+import clsx from "clsx";
+
+type InputProps = {
   label?: string;
-  error?: string;
-  hint?: string;
-}
+  helperText?: string;
+  error?: boolean;
+  errorMessage?: string;
+  placeholder?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
+  disabled?: boolean;
+  className?: string;
+  required?: boolean;
+  name?: string;
+  autoComplete?: string;
+};
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, hint, id, ...props }, ref) => {
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, "-");
+const Input: React.FC<InputProps> = ({
+  label,
+  helperText,
+  error = false,
+  errorMessage,
+  placeholder,
+  value,
+  onChange,
+  type = "text",
+  disabled = false,
+  className,
+  required,
+  name,
+  autoComplete,
+}) => {
+  const describedById = error
+    ? "input-error-text"
+    : helperText
+    ? "input-helper-text"
+    : undefined;
 
-    return (
-      <div className="flex flex-col gap-1.5">
-        {label && (
-          <label htmlFor={inputId} className="text-sm font-medium text-[var(--text-primary)]">
-            {label}
-          </label>
+  return (
+    <div className={clsx("flex flex-col gap-1", className)}>
+      {label && (
+        <label className="text-sm font-medium text-[#1A1A18]">
+          {label}
+        </label>
+      )}
+      <input
+        type={type}
+        name={name}
+        autoComplete={autoComplete}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        disabled={disabled}
+        required={required}
+        aria-invalid={error || undefined}
+        aria-describedby={describedById}
+        className={clsx(
+          "w-full rounded-xl border px-3 py-2 text-sm text-[#1A1A18] outline-none transition-colors",
+          "bg-[#F9F8F6] placeholder:text-[#1A1A18]/40",
+          "border-[rgba(0,0,0,0.12)] focus:border-[#1D9E75]",
+          error && "border-[#E24B4A] focus:border-[#E24B4A]",
+          disabled && "cursor-not-allowed bg-[#F9F8F6]/60 text-[#1A1A18]/40"
         )}
-        <input
-          ref={ref}
-          id={inputId}
-          className={cn(
-            "border border-[var(--border)] rounded-xl px-4 py-3 text-sm bg-white text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]",
-            "focus:border-[var(--green-400)] focus:ring-2 focus:ring-[var(--green-400)]/20 outline-none transition-all duration-200",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-            error && "border-red-400 focus:border-red-400 focus:ring-red-400/20",
-            className
-          )}
-          {...props}
-        />
-        {error && <p className="text-xs text-red-500">{error}</p>}
-        {hint && !error && <p className="text-xs text-[var(--text-tertiary)]">{hint}</p>}
-      </div>
-    );
-  }
-);
+      />
+      {helperText && !error && (
+        <p
+          id="input-helper-text"
+          className="text-xs text-[#1A1A18]/60"
+        >
+          {helperText}
+        </p>
+      )}
+      {error && errorMessage && (
+        <p
+          id="input-error-text"
+          className="text-xs text-[#E24B4A]"
+        >
+          {errorMessage}
+        </p>
+      )}
+    </div>
+  );
+};
 
-Input.displayName = "Input";
 export default Input;

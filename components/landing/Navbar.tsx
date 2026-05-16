@@ -1,103 +1,74 @@
-﻿"use client";
+"use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import Button from "@/components/ui/Button";
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <motion.nav
-      initial={{ y: -16, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] }}
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/80 backdrop-blur-xl border-b border-[var(--border)] shadow-sm"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-0.5">
-            <span
-              className="text-xl font-normal text-[var(--text-primary)]"
-              style={{ fontFamily: "var(--font-instrument-serif), 'Instrument Serif', Georgia, serif" }}
-            >
-              Missi
-            </span>
-            <span
-              className="text-xl font-normal text-[var(--green-400)]"
-              style={{ fontFamily: "var(--font-instrument-serif), 'Instrument Serif', Georgia, serif" }}
-            >
-              o•
-            </span>
+    <nav className="border-b border-[var(--border)] sticky top-0 bg-white z-50">
+      <div className="flex items-center justify-between px-6 md:px-10 h-16 max-w-[1400px] mx-auto">
+        {/* Logo */}
+        <Link href="/" className="font-display font-bold text-base tracking-tight">
+          MISSIO
+        </Link>
+
+        {/* Desktop nav */}
+        <div className="hidden md:flex gap-10 font-mono-c text-[11px] uppercase">
+          <Link href="#programs" className="hover:text-[var(--blue)] transition-colors">Программы</Link>
+          <Link href="#how" className="hover:text-[var(--blue)] transition-colors">Как работает</Link>
+          <Link href="#base" className="hover:text-[var(--blue)] transition-colors">База</Link>
+          <Link href="/org" className="hover:text-[var(--blue)] transition-colors">Для школ</Link>
+        </div>
+
+        {/* CTA */}
+        <div className="flex items-center gap-4">
+          <Link
+            href="/login"
+            className="hidden md:block font-mono-c text-[11px] uppercase hover:text-[var(--blue)] transition-colors"
+          >
+            Войти
           </Link>
-
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="#how-it-works" className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-              Как работает
-            </Link>
-            <Link href="#programs" className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-              Программы
-            </Link>
-            <Link href="#for-orgs" className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-              Организациям
-            </Link>
-          </div>
-
-          {/* CTAs */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link href="/login">
-              <Button variant="ghost" size="sm">Войти</Button>
-            </Link>
-            <Link href="/onboarding">
-              <Button size="sm">Начать бесплатно</Button>
-            </Link>
-          </div>
+          <Link
+            href="/onboarding"
+            className="font-mono-c text-[11px] uppercase bg-[var(--foreground)] text-white px-4 py-2 hover:bg-[var(--blue)] transition-colors"
+          >
+            Начать →
+          </Link>
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-[var(--bg-secondary)] transition-colors"
+            className="md:hidden font-mono-c text-[11px] p-1"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Меню"
           >
-            <div className="w-5 h-4 flex flex-col justify-between">
-              <span className={`block h-0.5 bg-[var(--text-primary)] transition-all ${mobileOpen ? "rotate-45 translate-y-1.5" : ""}`} />
-              <span className={`block h-0.5 bg-[var(--text-primary)] transition-all ${mobileOpen ? "opacity-0" : ""}`} />
-              <span className={`block h-0.5 bg-[var(--text-primary)] transition-all ${mobileOpen ? "-rotate-45 -translate-y-1.5" : ""}`} />
-            </div>
+            {mobileOpen ? "✕" : "☰"}
           </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-white border-t border-[var(--border)] px-4 py-4 flex flex-col gap-4">
-          <Link href="#how-it-works" className="text-sm text-[var(--text-secondary)]" onClick={() => setMobileOpen(false)}>Как работает</Link>
-          <Link href="#programs" className="text-sm text-[var(--text-secondary)]" onClick={() => setMobileOpen(false)}>Программы</Link>
-          <Link href="#for-orgs" className="text-sm text-[var(--text-secondary)]" onClick={() => setMobileOpen(false)}>Организациям</Link>
-          <div className="flex gap-3 pt-2 border-t border-[var(--border)]">
-            <Link href="/login" className="flex-1">
-              <Button variant="secondary" size="sm" className="w-full">Войти</Button>
+        <div className="md:hidden border-t border-[var(--border)] bg-white">
+          {[
+            { href: "#programs", label: "Программы" },
+            { href: "#how", label: "Как работает" },
+            { href: "#base", label: "База" },
+            { href: "/org", label: "Для школ" },
+            { href: "/login", label: "Войти" },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setMobileOpen(false)}
+              className="block px-6 py-4 font-mono-c text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors"
+            >
+              {item.label}
             </Link>
-            <Link href="/onboarding" className="flex-1">
-              <Button size="sm" className="w-full">Начать</Button>
-            </Link>
-          </div>
+          ))}
         </div>
       )}
-    </motion.nav>
+    </nav>
   );
 }

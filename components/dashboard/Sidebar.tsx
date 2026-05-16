@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Star, Calendar, ClipboardList, Bot, Settings, ChevronRight } from "lucide-react";
@@ -17,13 +18,30 @@ interface SidebarProps {
   student?: { name: string; grade: string; school: string; profileComplete?: number };
 }
 
-export default function Sidebar({ student }: SidebarProps) {
+export default function Sidebar({ student: studentProp }: SidebarProps) {
   const pathname = usePathname();
+  const [student, setStudent] = useState(studentProp);
 
-  const name = student?.name || "Аружан";
-  const grade = student?.grade || "11";
-  const school = student?.school || "НИШ";
-  const profileComplete = student?.profileComplete ?? 80;
+  useEffect(() => {
+    if (studentProp) return; // Prop takes priority
+    try {
+      const raw = localStorage.getItem("missio_profile");
+      if (raw) {
+        const p = JSON.parse(raw);
+        setStudent({
+          name: p.name || "Гость",
+          grade: p.grade || "?",
+          school: p.schoolType || p.schoolName || "Школа",
+          profileComplete: calcCompletion(p),
+        });
+      }
+    } catch { /* ignore */ }
+  }, [studentProp]);
+
+  const name = student?.name || "Гость";
+  const grade = student?.grade || "?";
+  const school = student?.school || "—";
+  const profileComplete = student?.profileComplete ?? 0;
 
   return (
     <aside className="w-60 shrink-0 bg-white border-r border-[var(--border)] flex flex-col min-h-screen sticky top-0">
@@ -106,4 +124,21 @@ export default function Sidebar({ student }: SidebarProps) {
       </div>
     </aside>
   );
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function calcCompletion(p: any): number {
+  let filled = 0;
+  let total = 10;
+  if (p.name) filled++;
+  if (p.email) filled++;
+  if (p.grade) filled++;
+  if (p.schoolType || p.schoolName) filled++;
+  if (p.city) filled++;
+  if (p.englishLevel) filled++;
+  if (Array.isArray(p.subjects) && p.subjects.length > 0) filled++;
+  if (Array.isArray(p.targetTypes) && p.targetTypes.length > 0) filled++;
+  if (Array.isArray(p.targetCountries) && p.targetCountries.length > 0) filled++;
+  if (p.whatsapp || p.telegram) filled++;
+  return Math.round((filled / total) * 100);
 }
