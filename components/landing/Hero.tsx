@@ -88,7 +88,7 @@ export default function Hero() {
             style={{ animation: "float 4s ease-in-out infinite" }}
           >
             {/* SVG illustration */}
-            <div className="w-full aspect-square bg-[var(--bg)] flex items-center justify-center relative group-hover:animate-[glitch_0.3s_ease-in-out]">
+            <div className="w-full aspect-square bg-transparent flex items-center justify-center relative group-hover:animate-[glitch_0.3s_ease-in-out]">
               <SpinningSphere />
             </div>
 

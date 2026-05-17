@@ -111,7 +111,7 @@ export default function SpinningSphere() {
   }, []);
 
   return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+    <div className="w-full h-full flex items-center justify-center relative overflow-hidden bg-transparent">
       <canvas
         ref={canvasRef}
         style={{ width: "100%", height: "100%", display: "block" }}
