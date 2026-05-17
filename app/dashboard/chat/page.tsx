@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Bot, User, Loader2 } from "lucide-react";
-import Button from "@/components/ui/Button";
 
 interface Message {
   role: "user" | "assistant";
@@ -38,7 +37,7 @@ function ChatContent() {
     const school = typeof profile.schoolType === "string" ? profile.schoolType : "школа";
     return {
       role: "assistant",
-      content: `Привет, ${name}. Я вижу твой профиль: ${grade} класс, ${school}. Помогу с мотивационными, сравнением программ и дедлайнами. С чего начнём?`,
+      content: `Привет, ${name}. Я вижу твой профиль: ${grade} класс, ${school}. Помогу подготовить мотивационные эссе, сравнить программы и разобрать дедлайны. С чего начнём?`,
     };
   }, [profile]);
 
@@ -105,7 +104,7 @@ function ChatContent() {
         if (last?.role === "assistant" && last.content === "") next.pop();
         return [
           ...next,
-          { role: "assistant", content: "Извини, не удалось получить ответ. Проверь ключ API или попробуй позже." },
+          { role: "assistant", content: "Извини, не удалось получить ответ. Попробуй позже." },
         ];
       });
     } finally {
@@ -121,41 +120,45 @@ function ChatContent() {
   };
 
   return (
-    <div className="flex h-screen max-h-screen flex-col">
+    <div className="flex h-screen max-h-screen flex-col font-mono-c bg-[var(--bg-secondary)]">
+      {/* Header */}
       <div className="shrink-0 border-b border-[var(--border)] bg-white px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--green-50)]">
-            <Bot size={18} className="text-[var(--green-600)]" />
+          <div className="flex h-10 w-10 items-center justify-center border border-[var(--border)] bg-[var(--bg-secondary)] text-[#1B3BFF]">
+            <Bot size={18} />
           </div>
           <div>
-            <h1 className="text-sm font-semibold text-[var(--text-primary)]">AI-ассистент</h1>
-            <p className="text-xs text-[var(--text-tertiary)]">Claude · стриминг · профиль с устройства</p>
+            <h1 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">AI-ассистент POAM</h1>
+            <p className="text-[10px] uppercase opacity-55">Персональная языковая модель · Контекст профиля подключен</p>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 overflow-y-auto px-4 py-6">
+      {/* Messages */}
+      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 overflow-y-auto px-6 py-8">
         <AnimatePresence initial={false}>
           {messages.map((msg, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
-              className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
+              transition={{ duration: 0.2 }}
+              className={`flex gap-4 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
             >
               <div
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                  msg.role === "assistant" ? "bg-[var(--green-50)] text-[var(--green-600)]" : "bg-[var(--gray-100)] text-[var(--text-secondary)]"
+                className={`flex h-8 w-8 shrink-0 items-center justify-center border ${
+                  msg.role === "assistant"
+                    ? "border-[#1B3BFF]/20 bg-[#1B3BFF]/[0.05] text-[#1B3BFF]"
+                    : "border-[var(--border)] bg-white text-[var(--foreground)]"
                 }`}
               >
                 {msg.role === "assistant" ? <Bot size={14} /> : <User size={14} />}
               </div>
               <div
-                className={`max-w-[78%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                className={`max-w-[80%] whitespace-pre-wrap border p-4 text-xs leading-relaxed uppercase ${
                   msg.role === "user"
-                    ? "rounded-tr-sm bg-[var(--green-400)] text-white"
-                    : "rounded-tl-sm border border-[var(--border)] bg-white text-[var(--text-primary)]"
+                    ? "border-[#1B3BFF] bg-[#1B3BFF] text-white"
+                    : "border-[var(--border)] bg-white text-[var(--foreground)]"
                 }`}
               >
                 {msg.content || (msg.role === "assistant" && loading ? "…" : "")}
@@ -163,13 +166,13 @@ function ChatContent() {
             </motion.div>
           ))}
           {loading && messages[messages.length - 1]?.role === "user" && (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--green-50)]">
-                <Bot size={14} className="text-[var(--green-600)]" />
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex gap-4">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-[#1B3BFF]/20 bg-[#1B3BFF]/[0.05] text-[#1B3BFF]">
+                <Bot size={14} />
               </div>
-              <div className="flex items-center gap-2 rounded-2xl rounded-tl-sm border border-[var(--border)] bg-white px-4 py-3">
-                <Loader2 size={14} className="animate-spin text-[var(--text-tertiary)]" />
-                <span className="text-sm text-[var(--text-tertiary)]">Печатает...</span>
+              <div className="flex items-center gap-3 border border-[var(--border)] bg-white px-4 py-3 text-xs uppercase opacity-75">
+                <Loader2 size={12} className="animate-spin text-[#1B3BFF]" />
+                <span>Анализирую требования...</span>
               </div>
             </motion.div>
           )}
@@ -177,16 +180,17 @@ function ChatContent() {
         <div ref={bottomRef} />
       </div>
 
+      {/* Quick prompts */}
       {messages.length === 1 && (
-        <div className="mx-auto w-full max-w-3xl px-4 pb-4">
-          <p className="mb-2 text-xs text-[var(--text-tertiary)]">Быстрые вопросы:</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="mx-auto w-full max-w-3xl px-6 pb-6">
+          <p className="mb-2 text-[10px] uppercase opacity-45">Быстрые запросы к ассистенту:</p>
+          <div className="flex flex-wrap gap-1.5">
             {QUICK_PROMPTS.map((p) => (
               <button
                 key={p}
                 type="button"
                 onClick={() => sendMessage(p)}
-                className="rounded-full border border-[var(--border)] px-3 py-1.5 text-xs transition-all hover:border-[var(--green-400)]/30 hover:bg-[var(--green-50)] hover:text-[var(--green-600)]"
+                className="border border-[var(--border)] bg-white px-3 py-2 text-[10px] uppercase hover:border-[#1B3BFF] hover:text-[#1B3BFF] transition-colors"
               >
                 {p}
               </button>
@@ -195,27 +199,28 @@ function ChatContent() {
         </div>
       )}
 
-      <div className="shrink-0 border-t border-[var(--border)] bg-white px-4 py-4">
+      {/* Input area */}
+      <div className="shrink-0 border-t border-[var(--border)] bg-white px-6 py-6">
         <div className="mx-auto flex max-w-3xl items-end gap-3">
           <textarea
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKey}
-            placeholder="Напиши вопрос или запрос..."
+            placeholder="Задай вопрос по твоим возможностям..."
             rows={1}
-            className="max-h-32 min-h-[48px] flex-1 resize-none overflow-y-auto rounded-xl border border-[var(--border)] px-4 py-3 text-sm leading-relaxed outline-none transition-all focus:border-[var(--green-400)] focus:ring-2 focus:ring-[var(--green-400)]/20"
+            className="max-h-32 min-h-[48px] flex-1 resize-none border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-3.5 text-xs uppercase outline-none focus:border-[#1B3BFF] transition-colors"
           />
-          <Button
+          <button
             type="button"
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl p-0"
+            className="flex h-12 w-12 shrink-0 items-center justify-center bg-black text-white hover:bg-[#1B3BFF] disabled:opacity-30 transition-colors border border-transparent"
           >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-          </Button>
+            {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+          </button>
         </div>
-        <p className="mt-2 text-center text-xs text-[var(--text-tertiary)]">Enter — отправить · Shift+Enter — новая строка</p>
+        <p className="mt-2 text-center text-[9px] uppercase opacity-40">Enter — отправить · Shift+Enter — новая строка</p>
       </div>
     </div>
   );
