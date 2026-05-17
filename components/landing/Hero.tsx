@@ -33,7 +33,7 @@ export default function Hero() {
       {/* Scanlines overlay — animated */}
       <div className="absolute inset-0 scanlines pointer-events-none" style={{ animation: "scanlines-move 8s linear infinite" }} />
 
-      <div className="relative px-6 md:px-10 py-28 md:py-36 max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 md:gap-16 items-center">
+      <div className="relative px-6 md:px-10 py-28 md:py-36 max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-[1.3fr_1fr] gap-12 md:gap-16 items-center">
         <div>
           {/* Eyebrow */}
           <p className="font-mono-c text-[11px] uppercase mb-10 opacity-60 tracking-widest">
@@ -82,13 +82,13 @@ export default function Hero() {
         </div>
 
         {/* Right — Archive illustration with float + glitch */}
-        <figure className="relative hidden md:block w-[280px] lg:w-[320px] justify-self-end group">
+        <figure className="relative hidden md:block w-[320px] lg:w-[360px] justify-self-center group md:-ml-16 lg:-ml-28">
           <div
             className="relative border border-[var(--border)] overflow-hidden"
-            style={{ animation: "float 4s ease-in-out infinite" }}
+            style={{ animation: "float 4s ease-in-out infinite", background: "transparent" }}
           >
             {/* SVG illustration */}
-            <div className="w-full aspect-square bg-transparent flex items-center justify-center relative group-hover:animate-[glitch_0.3s_ease-in-out]">
+            <div className="w-full aspect-square flex items-center justify-center relative group-hover:animate-[glitch_0.3s_ease-in-out]" style={{ background: "transparent" }}>
               <SpinningSphere />
             </div>
 
