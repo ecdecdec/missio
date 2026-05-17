@@ -32,6 +32,12 @@ function buildSystem(studentProfile: Record<string, unknown> | null | undefined)
 Цели (типы программ): ${Array.isArray(sp.targetTypes) ? (sp.targetTypes as string[]).join(", ") : "не указаны"}`;
 }
 
+// Clean quotes helper
+function cleanEnvVar(val: string | undefined): string {
+  if (!val) return "";
+  return val.replace(/"/g, "").trim();
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -43,24 +49,27 @@ export async function POST(req: NextRequest) {
       return new Response(JSON.stringify({ error: "Message is required" }), { status: 400 });
     }
 
-    if (!process.env.AZURE_OPENAI_API_KEY) {
+    const apiKey = cleanEnvVar(process.env.AZURE_OPENAI_API_KEY);
+    const endpoint = cleanEnvVar(process.env.AZURE_OPENAI_ENDPOINT);
+    const deployment = cleanEnvVar(process.env.AZURE_OPENAI_DEPLOYMENT) || "gpt-5.1";
+    const apiVersion = cleanEnvVar(process.env.AZURE_API_VERSION) || "2025-03-01-preview";
+
+    if (!apiKey) {
+      console.error("Azure OpenAI API key is missing or blank");
       return new Response(JSON.stringify({ error: "Azure OpenAI API key is not configured" }), { status: 500 });
     }
 
     const system = buildSystem(studentProfile);
+    const cleanedEndpoint = endpoint.replace(/\/+$/, "");
+    const url = `${cleanedEndpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
 
     if (stream) {
       // Azure OpenAI streaming
-      const endpoint = process.env.AZURE_OPENAI_ENDPOINT?.replace(/\/+$/, "") || "";
-      const deployment = process.env.AZURE_OPENAI_DEPLOYMENT || "gpt-5.1";
-      const apiVersion = process.env.AZURE_API_VERSION || "2025-03-01-preview";
-      const url = `${endpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
-
       const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "api-key": process.env.AZURE_OPENAI_API_KEY,
+          "api-key": apiKey,
         },
         body: JSON.stringify({
           messages: [
@@ -74,6 +83,8 @@ export async function POST(req: NextRequest) {
       });
 
       if (!res.ok || !res.body) {
+        const errorText = await res.text().catch(() => "Unknown error");
+        console.error(`Azure streaming request failed: ${res.status} ${res.statusText}`, errorText);
         return new Response(JSON.stringify({ error: "Azure API streaming failed" }), { status: 502 });
       }
 
@@ -121,12 +132,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Non-streaming
-    const url = `${process.env.AZURE_OPENAI_ENDPOINT?.replace(/\/+$/, "") || ""}/openai/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT || "gpt-5.1"}/chat/completions?api-version=${process.env.AZURE_API_VERSION || "2025-03-01-preview"}`;
     const res = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "api-key": process.env.AZURE_OPENAI_API_KEY,
+        "api-key": apiKey,
       },
       body: JSON.stringify({
         messages: [
@@ -139,6 +149,8 @@ export async function POST(req: NextRequest) {
     });
 
     if (!res.ok) {
+      const errorText = await res.text().catch(() => "Unknown error");
+      console.error(`Azure request failed: ${res.status} ${res.statusText}`, errorText);
       return new Response(JSON.stringify({ error: "Azure API failed" }), { status: 502 });
     }
 
