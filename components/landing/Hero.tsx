@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { PixelCanvas } from "@/components/landing/PixelCanvas";
 import TextScramble from "@/components/landing/TextScramble";
 import ParticleField from "@/components/landing/ParticleField";
+import SpinningSphere from "@/components/landing/SpinningSphere";
 
 const ROTATING = ["ГРАНТ", "СТАЖИРОВКУ", "ПРОГРАММУ", "БУДУЩЕЕ", "ВЫЛЕТ"];
 
@@ -88,88 +89,7 @@ export default function Hero() {
           >
             {/* SVG illustration */}
             <div className="w-full aspect-square bg-[var(--bg)] flex items-center justify-center relative group-hover:animate-[glitch_0.3s_ease-in-out]">
-              {/* Rotating star */}
-              <div
-                className="absolute top-8 left-1/2 -translate-x-1/2 text-[#1B3BFF] text-3xl"
-                style={{ animation: "spin 6s linear infinite" }}
-              >
-                ✦
-              </div>
-
-              {/* Abstract winged figures */}
-              <svg viewBox="0 0 280 280" className="w-full h-full" aria-hidden="true">
-                {/* Left figure */}
-                <g transform="translate(60, 80)" opacity="0.9">
-                  <circle cx="20" cy="20" r="12" fill="none" stroke="#080808" strokeWidth="2" />
-                  <line x1="20" y1="32" x2="20" y2="100" stroke="#080808" strokeWidth="2" />
-                  <line x1="20" y1="50" x2="0" y2="70" stroke="#080808" strokeWidth="2" />
-                  <line x1="20" y1="50" x2="40" y2="70" stroke="#080808" strokeWidth="2" />
-                  {/* Wing left */}
-                  <path
-                    d="M 0 70 Q -30 40 -10 20 Q 0 35 10 45"
-                    fill="none"
-                    stroke="#1B3BFF"
-                    strokeWidth="1.5"
-                    opacity="0.7"
-                  />
-                  <path
-                    d="M 0 80 Q -40 50 -20 25 Q -5 45 5 55"
-                    fill="none"
-                    stroke="#1B3BFF"
-                    strokeWidth="1"
-                    opacity="0.4"
-                  />
-                </g>
-
-                {/* Right figure */}
-                <g transform="translate(180, 80)" opacity="0.9">
-                  <circle cx="20" cy="20" r="12" fill="none" stroke="#080808" strokeWidth="2" />
-                  <line x1="20" y1="32" x2="20" y2="100" stroke="#080808" strokeWidth="2" />
-                  <line x1="20" y1="50" x2="0" y2="70" stroke="#080808" strokeWidth="2" />
-                  <line x1="20" y1="50" x2="40" y2="70" stroke="#080808" strokeWidth="2" />
-                  {/* Wing right */}
-                  <path
-                    d="M 40 70 Q 70 40 50 20 Q 40 35 30 45"
-                    fill="none"
-                    stroke="#1B3BFF"
-                    strokeWidth="1.5"
-                    opacity="0.7"
-                  />
-                  <path
-                    d="M 40 80 Q 80 50 60 25 Q 45 45 35 55"
-                    fill="none"
-                    stroke="#1B3BFF"
-                    strokeWidth="1"
-                    opacity="0.4"
-                  />
-                </g>
-
-                {/* Center text */}
-                <text
-                  x="140"
-                  y="230"
-                  textAnchor="middle"
-                  fontFamily="var(--font-space-grotesk), monospace"
-                  fontSize="24"
-                  fontWeight="700"
-                  fill="#1B3BFF"
-                  letterSpacing="8"
-                >
-                  
-                </text>
-
-                {/* Connecting line between figures */}
-                <line
-                  x1="100"
-                  y1="130"
-                  x2="180"
-                  y2="130"
-                  stroke="#080808"
-                  strokeWidth="1"
-                  strokeDasharray="4,4"
-                  opacity="0.3"
-                />
-              </svg>
+              <SpinningSphere />
             </div>
 
             {/* Text overlay */}

@@ -19,7 +19,6 @@ export default function Navbar() {
           <Link href="#programs" className="hover:text-[var(--blue)] transition-colors">Программы</Link>
           <Link href="#how" className="hover:text-[var(--blue)] transition-colors">Как работает</Link>
           <Link href="#base" className="hover:text-[var(--blue)] transition-colors">База</Link>
-          <Link href="/org" className="hover:text-[var(--blue)] transition-colors">Для школ</Link>
         </div>
 
         {/* CTA */}
@@ -55,7 +54,6 @@ export default function Navbar() {
             { href: "#programs", label: "Программы" },
             { href: "#how", label: "Как работает" },
             { href: "#base", label: "База" },
-            { href: "/org", label: "Для школ" },
             { href: "/login", label: "Войти" },
           ].map((item) => (
             <Link

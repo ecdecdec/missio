@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
@@ -12,7 +12,7 @@ import { calculateCompatibilityScore, getDaysUntilDeadline, getUrgencyLevel } fr
 import type { StudentProfileInput } from "@/lib/program-types";
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 15 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
 };
 const stagger = { visible: { transition: { staggerChildren: 0.08 } } };
@@ -48,7 +48,7 @@ export default function DashboardPage() {
     setProfile(loadProfile());
   }, []);
 
-  const displayName = profile.name?.trim() || "Ученик";
+  const displayName = profile.name?.trim() || "Исследователь";
 
   const matches: Match[] = useMemo(() => {
     return PREVIEW_IDS.map((id) => {
@@ -81,61 +81,70 @@ export default function DashboardPage() {
   return (
     <div className="max-w-5xl p-6 lg:p-8">
       <motion.div variants={stagger} initial="hidden" animate="visible" className="flex flex-col gap-8">
-        <motion.div variants={fadeUp} className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-medium text-[var(--text-primary)]" style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif" }}>
+        
+        {/* Header Section */}
+        <motion.div variants={fadeUp} className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border border-[var(--border)] bg-white p-8 relative overflow-hidden">
+          <div className="absolute inset-0 scanlines opacity-5 pointer-events-none" />
+          <div className="z-10">
+            <h1 className="font-display font-bold text-3xl tracking-tight text-[var(--foreground)] mb-1">
               Привет, {displayName}
             </h1>
-            <p className="text-sm text-[var(--text-secondary)]">Профиль заполнен на {completion}% · данные с этого устройства</p>
+            <p className="font-mono-c text-xs uppercase opacity-60">
+              Анкета заполнена на {completion}% · Локальные данные
+            </p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-[var(--text-tertiary)]">
-            <UserCircle size={18} />
-            <Link href="/onboarding" className="text-[var(--green-600)] hover:underline">
+          <div className="flex items-center gap-2 font-mono-c text-[11px] uppercase z-10">
+            <UserCircle size={16} className="text-[#1B3BFF]" />
+            <Link href="/onboarding" className="text-[#1B3BFF] hover:underline font-bold">
               Изменить профиль
             </Link>
           </div>
         </motion.div>
 
-        <div className="h-2 w-full max-w-md overflow-hidden rounded-full bg-[var(--gray-100)]">
+        {/* Progress Bar (Monochrome/Blue style) */}
+        <div className="w-full max-w-md h-2 border border-[var(--border)] bg-[var(--bg-secondary)] overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${completion}%` }}
-            className="h-full rounded-full bg-[var(--green-400)]"
+            className="h-full bg-[#1B3BFF]"
             transition={{ duration: 0.6 }}
           />
         </div>
 
+        {/* Matches Hero Card */}
         <motion.div
           variants={fadeUp}
-          className="rounded-2xl bg-gradient-to-r from-[var(--green-900)] to-[var(--green-600)] p-6 text-white"
+          className="border border-[var(--border)] bg-[var(--foreground)] text-white p-8 relative overflow-hidden"
         >
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+          <div className="absolute inset-0 scanlines opacity-10 pointer-events-none" />
+          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-start z-10 relative">
             <div>
-              <div className="mb-2 flex items-center gap-2">
-                <Sparkles size={16} className="text-[var(--green-100)]" />
-                <span className="text-sm text-[var(--green-100)]">Новые матчи</span>
+              <div className="mb-3 flex items-center gap-2">
+                <Sparkles size={14} className="text-[#1B3BFF]" />
+                <span className="font-mono-c text-[10px] uppercase tracking-wider text-[#1B3BFF] font-bold">Умный поиск POAM</span>
               </div>
-              <p className="text-lg font-medium" style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif" }}>
-                Для тебя подобрано {matches.length} программ
+              <p className="font-display font-bold text-xl md:text-2xl tracking-tight leading-tight">
+                Для тебя подобрано {matches.length} подходящих программ
               </p>
-              <p className="mt-1 text-sm text-[var(--green-100)]">
-                Листай карточки ниже и добавляй интересное в трекер дедлайнов.
+              <p className="mt-2 font-mono-c text-[11px] opacity-70">
+                Изучи карточки совпадений и добавь интересные варианты в трекер.
               </p>
             </div>
-            <div className="flex shrink-0 items-center gap-2 self-start rounded-xl bg-white/10 px-4 py-2">
-              <Bell size={14} className="text-[var(--green-100)]" />
-              <span className="text-xs text-[var(--green-100)]">Алерты (MVP): в профиле</span>
+            <div className="flex shrink-0 items-center gap-2 self-start border border-[rgba(255,255,255,0.2)] px-4 py-2 font-mono-c text-[10px] uppercase">
+              <Bell size={12} className="text-[#1B3BFF]" />
+              <span className="text-[#1B3BFF] font-bold">Уведомления активны</span>
             </div>
           </div>
         </motion.div>
 
-        <motion.div variants={fadeUp}>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-[var(--text-primary)]">Топ матчи</h2>
+        {/* Top Matches */}
+        <motion.div variants={fadeUp} className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display font-bold text-lg flex items-center gap-2">🔥 Подходящие варианты</h2>
             <Link href="/dashboard/matches">
-              <Button variant="ghost" size="sm" className="group text-xs">
+              <Button variant="ghost" size="sm" className="group font-mono-c text-[10px] uppercase hover:text-[#1B3BFF]">
                 Смотреть все
-                <ArrowRight size={12} className="transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight size={10} className="transition-transform group-hover:translate-x-0.5" />
               </Button>
             </Link>
           </div>
@@ -155,29 +164,32 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <motion.div variants={fadeUp} className="rounded-2xl border border-[var(--border)] bg-white p-5">
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-[var(--text-primary)]">Дедлайн-трекер</h2>
+        {/* Grid Panels */}
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* Tracker Card */}
+          <motion.div variants={fadeUp} className="border border-[var(--border)] bg-white p-6 md:p-8 flex flex-col justify-between">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="font-display font-bold text-base">Дедлайн-трекер</h2>
               <Link href="/dashboard/deadlines">
-                <Button variant="ghost" size="sm" className="text-xs">
-                  Все
+                <Button variant="ghost" size="sm" className="font-mono-c text-[10px] uppercase hover:text-[#1B3BFF]">
+                  Перейти
                 </Button>
               </Link>
             </div>
             <DeadlineTracker />
           </motion.div>
 
-          <motion.div variants={fadeUp} className="rounded-2xl border border-[var(--border)] bg-white p-5">
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-[var(--text-primary)]">AI-ассистент</h2>
+          {/* AI Helper Card */}
+          <motion.div variants={fadeUp} className="border border-[var(--border)] bg-white p-6 md:p-8 flex flex-col justify-between">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="font-display font-bold text-base">AI-ассистент</h2>
               <Link href="/dashboard/chat">
-                <Button variant="ghost" size="sm" className="text-xs">
-                  Открыть
+                <Button variant="ghost" size="sm" className="font-mono-c text-[10px] uppercase hover:text-[#1B3BFF]">
+                  Открыть чат
                 </Button>
               </Link>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2.5">
               {[
                 "Напиши мотивационное письмо для FLEX",
                 "Сравни FLEX и YES: что лучше для меня?",
@@ -187,10 +199,10 @@ export default function DashboardPage() {
                 <Link key={q} href={`/dashboard/chat?q=${encodeURIComponent(q)}`}>
                   <button
                     type="button"
-                    className="group flex w-full items-center justify-between gap-2 rounded-xl border border-[var(--border)] px-4 py-3 text-left text-sm transition-all duration-200 hover:border-[var(--green-400)]/30 hover:bg-[var(--green-50)] hover:text-[var(--green-600)]"
+                    className="group flex w-full items-center justify-between gap-3 border border-[var(--border)] px-4 py-3 text-left font-mono-c text-xs uppercase transition-all duration-150 hover:border-[#1B3BFF] hover:bg-[var(--bg-secondary)]"
                   >
                     <span className="truncate">{q}</span>
-                    <ArrowRight size={12} className="shrink-0 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+                    <ArrowRight size={10} className="shrink-0 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100 text-[#1B3BFF]" />
                   </button>
                 </Link>
               ))}

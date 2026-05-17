@@ -31,10 +31,10 @@ export default function ProgramGrid() {
   const [active, setActive] = useState("Все");
 
   const filtered = active === "Все"
-    ? FEATURED
-    : FEATURED.filter((p) => TYPE_MAP[active]?.includes(p.type));
+    ? ALL_PROGRAMS.filter(p => p.isFeatured || p.isPopular)
+    : ALL_PROGRAMS.filter((p) => TYPE_MAP[active]?.includes(p.type));
 
-  const displayPrograms = filtered.length > 0 ? filtered : FEATURED.slice(0, 6);
+  const displayPrograms = filtered.slice(0, 6);
 
   return (
     <section id="programs" className="border-b border-[var(--border)]">
