@@ -13,7 +13,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import Badge from "@/components/ui/Badge";
 import Link from "next/link";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
@@ -25,7 +24,6 @@ import type { StudentProfileInput } from "@/lib/program-types";
 import {
   calculateCompatibilityScore,
   getDaysUntilDeadline,
-  getProgramTypeBadgeVariant,
   getProgramTypeLabel,
   getUrgencyLevel,
 } from "@/lib/utils";
@@ -161,19 +159,19 @@ export default function ProgramsPage() {
   const slice = filtered.slice((pageClamped - 1) * PAGE_SIZE, pageClamped * PAGE_SIZE);
 
   const FilterPanel = ({ onClose }: { onClose?: () => void }) => (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6 font-mono-c">
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Тип</p>
-        <div className="flex flex-wrap gap-2">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Тип программы</p>
+        <div className="flex flex-wrap gap-1.5">
           {TYPES.map((f) => (
             <button
               key={f.id}
               type="button"
               onClick={() => setTypeFilter(f.id)}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all ${
+              className={`border px-3 py-2 text-[10px] uppercase transition-all duration-150 ${
                 typeFilter === f.id
-                  ? "border-[#0F6E56] bg-[#1D9E75] text-white shadow-sm ring-2 ring-[#1D9E75]/30"
-                  : "border border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300 hover:bg-neutral-50"
+                  ? "border-[var(--border)] bg-[#1B3BFF] text-white font-bold"
+                  : "border-[var(--border)] bg-white text-[var(--text-secondary)] hover:border-black hover:text-black"
               }`}
             >
               {f.label}
@@ -181,12 +179,13 @@ export default function ProgramsPage() {
           ))}
         </div>
       </div>
+
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Страна</p>
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Целевая страна</p>
         <select
           value={countryFilter}
           onChange={(e) => setCountryFilter(e.target.value)}
-          className="w-full rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--green-400)]"
+          className="w-full border border-[var(--border)] bg-white px-3 py-2.5 text-xs outline-none focus:border-[#1B3BFF] uppercase"
         >
           {countries.map((c) => (
             <option key={c} value={c}>
@@ -195,18 +194,19 @@ export default function ProgramsPage() {
           ))}
         </select>
       </div>
+
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Английский (минимум для фильтра)</p>
-        <div className="flex flex-wrap gap-2">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Уровень английского</p>
+        <div className="flex flex-wrap gap-1.5">
           {EN_LEVELS.map((f) => (
             <button
               key={f.id}
               type="button"
               onClick={() => setEnglishFilter(f.id)}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all ${
+              className={`border px-3 py-2 text-[10px] uppercase transition-all duration-150 ${
                 englishFilter === f.id
-                  ? "border-neutral-800 bg-neutral-900 text-white shadow-sm ring-2 ring-neutral-900/25"
-                  : "border border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300 hover:bg-neutral-50"
+                  ? "border-[var(--border)] bg-black text-white font-bold"
+                  : "border-[var(--border)] bg-white text-[var(--text-secondary)] hover:border-black hover:text-black"
               }`}
             >
               {f.label}
@@ -214,18 +214,19 @@ export default function ProgramsPage() {
           ))}
         </div>
       </div>
+
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Класс</p>
-        <div className="flex flex-wrap gap-2">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Класс обучения</p>
+        <div className="flex flex-wrap gap-1.5">
           {GRADES.map((g) => (
             <button
               key={g}
               type="button"
               onClick={() => setGradeFilter(g)}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all ${
+              className={`border px-3 py-2 text-[10px] uppercase transition-all duration-150 ${
                 gradeFilter === g
-                  ? "border-[#0F6E56] bg-[#1D9E75] text-white shadow-sm ring-2 ring-[#1D9E75]/30"
-                  : "border border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300 hover:bg-neutral-50"
+                  ? "border-[var(--border)] bg-[#1B3BFF] text-white font-bold"
+                  : "border-[var(--border)] bg-white text-[var(--text-secondary)] hover:border-black hover:text-black"
               }`}
             >
               {g === "all" ? "Любой" : `${g} класс`}
@@ -233,18 +234,19 @@ export default function ProgramsPage() {
           ))}
         </div>
       </div>
+
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-tertiary)]">Срочность</p>
-        <div className="flex flex-wrap gap-2">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)]">Срочность дедлайна</p>
+        <div className="flex flex-wrap gap-1.5">
           {URGENCY_OPTIONS.map((f) => (
             <button
               key={f.id}
               type="button"
               onClick={() => setUrgencyFilter(f.id)}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all ${
+              className={`border px-3 py-2 text-[10px] uppercase transition-all duration-150 ${
                 urgencyFilter === f.id
-                  ? "border-neutral-800 bg-neutral-900 text-white shadow-sm ring-2 ring-neutral-900/25"
-                  : "border border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300 hover:bg-neutral-50"
+                  ? "border-[var(--border)] bg-black text-white font-bold"
+                  : "border-[var(--border)] bg-white text-[var(--text-secondary)] hover:border-black hover:text-black"
               }`}
             >
               {f.label}
@@ -252,10 +254,15 @@ export default function ProgramsPage() {
           ))}
         </div>
       </div>
+
       {onClose && (
-        <Button type="button" className="w-full lg:hidden" onClick={onClose}>
-          Показать результаты
-        </Button>
+        <button
+          type="button"
+          className="w-full bg-black text-white py-3.5 text-xs uppercase font-bold hover:bg-[#1B3BFF] transition-colors"
+          onClick={onClose}
+        >
+          Применить фильтры
+        </button>
       )}
     </div>
   );
@@ -263,33 +270,28 @@ export default function ProgramsPage() {
   const ProgramRow = ({ program }: { program: Program }) => {
     const days = getDaysUntilDeadline(program.deadline);
     const urg = getUrgencyLevel(days);
-    const dot = urg === "critical" ? "bg-red-500" : urg === "soon" ? "bg-amber-500" : "bg-[var(--green-400)]";
+    const timeText = days < 0 ? "Прошёл" : `${days} дней`;
     const match = calculateCompatibilityScore(student, program);
     return (
       <Link href={`/programs/${program.id}`}>
-        <div className="flex flex-col gap-3 rounded-2xl border border-[var(--border)] bg-white p-4 transition-all hover:border-[var(--border-hover)] hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-1 flex-wrap items-start gap-3">
-            <CountryCodeBadge code={program.countryCode} />
-            <div className="min-w-0 flex-1">
-              <div className="mb-1 flex flex-wrap items-center gap-2">
-                <Badge variant={getProgramTypeBadgeVariant(program.type)}>{getProgramTypeLabel(program.type)}</Badge>
-                {program.isPopular && <Badge variant="amber">Популярное</Badge>}
-              </div>
-              <h3 className="font-semibold text-[var(--text-primary)]">{program.nameRu}</h3>
-              <p className="text-xs text-[var(--text-tertiary)]">{program.organization}</p>
+        <div className="border border-[var(--border)] bg-white p-6 hover:bg-[var(--bg-secondary)] transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 mb-2 font-mono-c text-[10px] uppercase">
+              <CountryCodeBadge code={program.countryCode} />
+              <span className="opacity-50">{getProgramTypeLabel(program.type)}</span>
+              {program.isPopular && <span className="text-[#1B3BFF] font-bold">Популярное</span>}
             </div>
+            <h3 className="font-display font-bold text-lg leading-tight group-hover:text-[#1B3BFF] transition-colors">{program.nameRu}</h3>
+            <p className="font-mono-c text-[9px] uppercase opacity-40 mt-1">{program.organization}</p>
           </div>
-          <div className="flex shrink-0 flex-wrap items-center gap-4 text-sm text-[var(--text-secondary)]">
-            <span className="flex items-center gap-1.5">
-              <span className={`h-2 w-2 rounded-full ${dot}`} />
-              <Clock size={14} />
-              {days < 0 ? "Прошёл" : `${days} дн.`}
+          <div className="flex items-center gap-6 font-mono-c text-[10px] uppercase shrink-0">
+            <span className="flex items-center gap-1 opacity-70">
+              <Clock size={12} /> {timeText}
             </span>
-            <span className="flex items-center gap-1">
-              <Globe size={14} />
-              {program.englishLevel}
+            <span className="flex items-center gap-1 opacity-70">
+              <Globe size={12} /> {program.englishLevel}
             </span>
-            <span className="rounded-full bg-[var(--green-50)] px-2 py-0.5 text-xs font-semibold text-[var(--green-600)]">{match}%</span>
+            <span className="border border-[var(--border)] bg-[var(--bg-secondary)] px-2.5 py-1 text-[#1B3BFF] font-bold">Матч {match}%</span>
           </div>
         </div>
       </Link>
@@ -299,33 +301,30 @@ export default function ProgramsPage() {
   const ProgramCard = ({ program }: { program: Program }) => {
     const days = getDaysUntilDeadline(program.deadline);
     const urg = getUrgencyLevel(days);
-    const dot = urg === "critical" ? "bg-red-500" : urg === "soon" ? "bg-amber-500" : "bg-[var(--green-400)]";
+    const timeText = days < 0 ? "Дедлайн прошёл" : `${days} дн.`;
     const match = calculateCompatibilityScore(student, program);
     return (
-      <Link href={`/programs/${program.id}`}>
-        <motion.div
-          layout
-          className="flex h-full flex-col rounded-2xl border border-[var(--border)] bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-[var(--border-hover)] hover:shadow-md"
-        >
-          <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <CountryCodeBadge code={program.countryCode} />
-              <Badge variant={getProgramTypeBadgeVariant(program.type)}>{getProgramTypeLabel(program.type)}</Badge>
+      <Link href={`/programs/${program.id}`} className="group">
+        <div className="border border-[var(--border)] bg-white p-6 hover:bg-[var(--bg-secondary)] transition-colors flex flex-col justify-between h-full">
+          <div>
+            <div className="flex justify-between items-center mb-4 font-mono-c text-[10px] uppercase">
+              <div className="flex items-center gap-2">
+                <CountryCodeBadge code={program.countryCode} />
+                <span className="opacity-50">{getProgramTypeLabel(program.type)}</span>
+              </div>
+              {urg === "critical" && <span className="text-red-500 font-bold">Срочно</span>}
             </div>
-            {urg === "critical" && <Badge variant="red">Срочно</Badge>}
+            <h3 className="font-display font-bold text-base leading-snug mb-2 group-hover:text-[#1B3BFF] transition-colors line-clamp-2 min-h-[3rem]">{program.nameRu}</h3>
+            <p className="font-mono-c text-[9px] uppercase opacity-40 mb-3">{program.organization}</p>
+            <p className="text-xs opacity-70 leading-relaxed line-clamp-3 mb-6">{program.description}</p>
           </div>
-          <h3 className="mb-1 line-clamp-2 min-h-[2.5rem] font-semibold leading-snug text-[var(--text-primary)]">{program.nameRu}</h3>
-          <p className="mb-3 line-clamp-2 text-xs text-[var(--text-tertiary)]">{program.organization}</p>
-          <p className="mb-4 line-clamp-2 flex-1 text-xs leading-relaxed text-[var(--text-secondary)]">{program.description}</p>
-          <div className="mt-auto flex flex-wrap gap-x-3 gap-y-1 text-xs text-[var(--text-secondary)]">
-            <span className="flex items-center gap-1">
-              <span className={`h-2 w-2 shrink-0 rounded-full ${dot}`} />
-              <Clock size={10} />
-              {days < 0 ? "Дедлайн прошёл" : `${days} дн.`}
+          <div className="flex justify-between items-center font-mono-c text-[10px] uppercase pt-4 border-t border-[var(--border)] mt-auto">
+            <span className="flex items-center gap-1 opacity-70">
+              <Clock size={12} /> {timeText}
             </span>
-            <span className="rounded-full bg-[var(--bg-secondary)] px-2 py-0.5 font-medium text-[var(--text-primary)]">Матч {match}%</span>
+            <span className="border border-[var(--border)] bg-[var(--bg-secondary)] px-2 py-0.5 text-[#1B3BFF] font-bold">Матч {match}%</span>
           </div>
-        </motion.div>
+        </div>
       </Link>
     );
   };
@@ -333,89 +332,98 @@ export default function ProgramsPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-[var(--bg-secondary)] pt-16">
-        <div className="border-b border-[var(--border)] bg-white px-4 py-10">
-          <div className="mx-auto max-w-7xl">
-            <h1 className="display-md mb-2 text-[var(--text-primary)]">База программ</h1>
-            <p className="body-md mb-6 max-w-xl text-[var(--text-secondary)]">
-              Гранты, обмен, олимпиады и летние школы — с дедлайнами и оценкой совместимости с твоим профилем.
-            </p>
-            <div className="relative max-w-lg">
-              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
+      <div className="min-h-screen bg-[var(--bg-secondary)]">
+        
+        {/* Title area */}
+        <div className="border-b border-[var(--border)] bg-white px-6 py-16 md:py-24">
+          <div className="mx-auto max-w-[1200px] flex flex-col md:flex-row md:items-end justify-between gap-8 relative overflow-hidden">
+            <div className="absolute inset-0 scanlines opacity-5 pointer-events-none" />
+            <div className="z-10">
+              <h1 className="font-display font-bold text-4xl md:text-5xl tracking-tight mb-3">База программ</h1>
+              <p className="font-mono-c text-[11px] uppercase opacity-60 max-w-xl">
+                Гранты, обмен, олимпиады и летние школы — с дедлайнами и оценкой совместимости с твоим профилем.
+              </p>
+            </div>
+            <div className="relative w-full md:w-80 z-10 font-mono-c">
+              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Поиск по названию, организации, тегам..."
-                className="w-full rounded-full border border-[var(--border)] bg-white py-3 pl-11 pr-4 text-sm outline-none transition-all focus:border-[var(--green-400)] focus:ring-2 focus:ring-[var(--green-400)]/20"
+                placeholder="Поиск программ..."
+                className="w-full border border-[var(--border)] bg-[var(--bg-secondary)] py-3.5 pl-11 pr-4 text-xs uppercase outline-none focus:border-[#1B3BFF] transition-colors"
               />
             </div>
           </div>
         </div>
 
-        <div className="mx-auto flex max-w-7xl gap-8 px-4 py-8">
-          <aside className="hidden w-72 shrink-0 lg:block">
-            <div className="sticky top-24 rounded-2xl border border-[var(--border)] bg-white p-5">
-              <h2 className="mb-4 font-semibold text-[var(--text-primary)]">Фильтры</h2>
+        {/* Content area */}
+        <div className="mx-auto max-w-[1200px] flex gap-8 px-6 py-12">
+          
+          {/* Desktop sidebar */}
+          <aside className="hidden lg:block w-72 shrink-0">
+            <div className="sticky top-24 border border-[var(--border)] bg-white p-6">
+              <h2 className="font-display font-bold text-lg mb-6 border-b border-[var(--border)] pb-3">Фильтры</h2>
               <FilterPanel />
             </div>
           </aside>
 
+          {/* Grid results */}
           <div className="min-w-0 flex-1">
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-              <div className="flex flex-wrap items-center gap-2">
+            <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between font-mono-c text-[10px] uppercase">
+              <div className="flex items-center gap-4">
                 <button
                   type="button"
                   onClick={() => setMobileFiltersOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-4 py-2 text-sm font-medium text-[var(--text-primary)] lg:hidden"
+                  className="inline-flex items-center gap-2 border border-[var(--border)] bg-white px-4 py-2.5 font-bold text-[10px] lg:hidden hover:border-black transition-colors"
                 >
-                  <SlidersHorizontal size={16} />
+                  <SlidersHorizontal size={12} />
                   Фильтры
                   {activeFilterCount > 0 && (
-                    <span className="rounded-full bg-[var(--green-400)] px-2 py-0.5 text-xs text-white">{activeFilterCount}</span>
+                    <span className="bg-[#1B3BFF] text-white px-1.5 py-0.5 font-bold border border-[#1B3BFF] ml-1">{activeFilterCount}</span>
                   )}
                 </button>
-                <span className="text-sm text-[var(--text-tertiary)]">
-                  Найдено: <strong className="text-[var(--text-primary)]">{filtered.length}</strong>
+                <span className="opacity-60">
+                  Найдено программ: <strong className="text-[var(--foreground)] opacity-100">{filtered.length}</strong>
                 </span>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              
+              <div className="flex items-center gap-3">
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value as typeof sort)}
-                  className="rounded-full border border-[var(--border)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--green-400)]"
+                  className="border border-[var(--border)] bg-white px-3 py-2 text-[10px] outline-none focus:border-[#1B3BFF] uppercase"
                 >
                   <option value="deadline">По дедлайну</option>
                   <option value="popularity">По популярности</option>
                   <option value="match">По совместимости</option>
                 </select>
-                <div className="flex rounded-full border border-[var(--border)] bg-white p-0.5">
+                <div className="flex border border-[var(--border)] bg-white p-0.5">
                   <button
                     type="button"
                     onClick={() => setView("grid")}
-                    className={`rounded-full p-2 ${view === "grid" ? "bg-[var(--bg-secondary)] text-[var(--text-primary)]" : "text-[var(--text-tertiary)]"}`}
+                    className={`p-2 transition-colors ${view === "grid" ? "bg-[var(--bg-secondary)] text-[#1B3BFF]" : "text-[var(--text-tertiary)]"}`}
                     aria-label="Сетка"
                   >
-                    <LayoutGrid size={16} />
+                    <LayoutGrid size={14} />
                   </button>
                   <button
                     type="button"
                     onClick={() => setView("list")}
-                    className={`rounded-full p-2 ${view === "list" ? "bg-[var(--bg-secondary)] text-[var(--text-primary)]" : "text-[var(--text-tertiary)]"}`}
+                    className={`p-2 transition-colors ${view === "list" ? "bg-[var(--bg-secondary)] text-[#1B3BFF]" : "text-[var(--text-tertiary)]"}`}
                     aria-label="Список"
                   >
-                    <List size={16} />
+                    <List size={14} />
                   </button>
                 </div>
               </div>
             </div>
 
             {slice.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-[var(--border)] bg-white px-6 py-16 text-center">
-                <p className="mb-2 font-medium text-[var(--text-primary)]">Ничего не нашли</p>
-                <p className="mb-6 text-sm text-[var(--text-secondary)]">Попробуй снять часть фильтров или изменить поисковый запрос.</p>
-                <Button
+              <div className="border border-dashed border-[var(--border)] bg-white px-6 py-20 text-center font-mono-c">
+                <p className="mb-2 font-bold uppercase">Ничего не найдено</p>
+                <p className="mb-6 text-xs opacity-60">Попробуй изменить параметры фильтров или поисковый запрос.</p>
+                <button
                   type="button"
-                  variant="secondary"
                   onClick={() => {
                     setSearch("");
                     setTypeFilter("all");
@@ -424,44 +432,49 @@ export default function ProgramsPage() {
                     setGradeFilter("all");
                     setUrgencyFilter("all");
                   }}
+                  className="bg-black text-white hover:bg-[#1B3BFF] px-6 py-3 text-xs uppercase font-bold transition-colors"
                 >
                   Сбросить фильтры
-                </Button>
+                </button>
               </div>
             ) : view === "grid" ? (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 border-l border-t border-[var(--border)]">
                 {slice.map((program, index) => (
-                  <ProgramCard key={`${program.id}-${index}`} program={program} />
+                  <div key={`${program.id}-${index}`} className="border-r border-b border-[var(--border)]">
+                    <ProgramCard program={program} />
+                  </div>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col border-t border-[var(--border)]">
                 {slice.map((program, index) => (
-                  <ProgramRow key={`${program.id}-${index}`} program={program} />
+                  <div key={`${program.id}-${index}`} className="border-b border-[var(--border)]">
+                    <ProgramRow program={program} />
+                  </div>
                 ))}
               </div>
             )}
 
             {totalPages > 1 && (
-              <div className="mt-8 flex items-center justify-center gap-2">
+              <div className="mt-12 flex items-center justify-center gap-1.5 font-mono-c text-[10px] uppercase">
                 <button
                   type="button"
                   disabled={pageClamped <= 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className="rounded-full border border-[var(--border)] p-2 disabled:opacity-40"
+                  className="border border-[var(--border)] bg-white hover:bg-[var(--bg-secondary)] px-3 py-2 disabled:opacity-40"
                 >
-                  <ChevronLeft size={18} />
+                  Назад
                 </button>
-                <span className="text-sm text-[var(--text-secondary)]">
-                  {pageClamped} / {totalPages}
+                <span className="border border-[var(--border)] bg-white px-4 py-2 font-bold text-[#1B3BFF]">
+                  Стр. {pageClamped} из {totalPages}
                 </span>
                 <button
                   type="button"
                   disabled={pageClamped >= totalPages}
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  className="rounded-full border border-[var(--border)] p-2 disabled:opacity-40"
+                  className="border border-[var(--border)] bg-white hover:bg-[var(--bg-secondary)] px-3 py-2 disabled:opacity-40"
                 >
-                  <ChevronRight size={18} />
+                  Вперед
                 </button>
               </div>
             )}
@@ -469,32 +482,37 @@ export default function ProgramsPage() {
         </div>
       </div>
 
+      {/* Mobile filter sheet */}
       <AnimatePresence>
         {mobileFiltersOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 lg:hidden"
-            onClick={() => setMobileFiltersOpen(false)}
-          >
+          <>
             <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 320 }}
-              className="max-h-[90vh] w-full overflow-y-auto rounded-t-3xl border border-[var(--border)] bg-white p-6 shadow-xl"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileFiltersOpen(false)}
+              className="fixed inset-0 z-50 bg-black"
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "tween", duration: 0.25 }}
+              className="fixed bottom-0 right-0 top-0 z-50 w-full max-w-sm bg-white p-6 overflow-y-auto flex flex-col"
             >
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Фильтры</h2>
-                <button type="button" className="rounded-lg p-2 hover:bg-[var(--bg-secondary)]" onClick={() => setMobileFiltersOpen(false)}>
-                  <X size={20} />
+              <div className="mb-6 flex items-center justify-between border-b border-[var(--border)] pb-3">
+                <h2 className="font-display font-bold text-lg">Фильтры</h2>
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  className="p-1 hover:text-[#1B3BFF]"
+                >
+                  <X size={16} />
                 </button>
               </div>
               <FilterPanel onClose={() => setMobileFiltersOpen(false)} />
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
       <Footer />

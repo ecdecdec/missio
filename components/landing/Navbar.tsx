@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hasProfile, setHasProfile] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     try {
@@ -18,8 +20,11 @@ export default function Navbar() {
     }
   }, []);
 
+  // Check if we are inside the logged-in app screens
+  const isAppView = pathname.startsWith("/dashboard") || pathname.startsWith("/profile");
+
   return (
-    <nav className="border-b border-[var(--border)] sticky top-0 bg-white z-50">
+    <nav className="border-b border-[var(--border)] sticky top-0 bg-white z-50 font-mono-c">
       <div className="flex items-center justify-between px-6 md:px-10 h-16 max-w-[1400px] mx-auto">
         {/* Logo */}
         <Link href="/" className="font-display font-bold text-lg tracking-tight uppercase hover:text-[#1B3BFF] transition-colors">
@@ -27,12 +32,17 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex gap-10 font-mono-c text-[11px] uppercase">
-          <Link href="/programs" className="hover:text-[var(--blue)] transition-colors">Программы</Link>
-          <Link href="/#how" className="hover:text-[var(--blue)] transition-colors">Как работает</Link>
-          <Link href="/#base" className="hover:text-[var(--blue)] transition-colors">База</Link>
-          {hasProfile && (
+        <div className="hidden md:flex gap-10 text-[11px] uppercase">
+          {!hasProfile ? (
             <>
+              <Link href="/programs" className="hover:text-[var(--blue)] transition-colors">Программы</Link>
+              <Link href="/#how" className="hover:text-[var(--blue)] transition-colors">Как работает</Link>
+              <Link href="/#base" className="hover:text-[var(--blue)] transition-colors">База</Link>
+            </>
+          ) : (
+            <>
+              {/* Logged in clean navigation */}
+              <Link href="/programs" className="hover:text-[var(--blue)] transition-colors">Все программы</Link>
               <Link href="/dashboard" className="hover:text-[var(--blue)] transition-colors text-[#1B3BFF] font-bold">Панель</Link>
               <Link href="/profile" className="hover:text-[var(--blue)] transition-colors text-[#1B3BFF] font-bold">Профиль</Link>
             </>
@@ -79,52 +89,59 @@ export default function Navbar() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-[var(--border)] bg-white">
-          <Link
-            href="/programs"
-            onClick={() => setMobileOpen(false)}
-            className="block px-6 py-4 font-mono-c text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors"
-          >
-            Программы
-          </Link>
-          <Link
-            href="/#how"
-            onClick={() => setMobileOpen(false)}
-            className="block px-6 py-4 font-mono-c text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors"
-          >
-            Как работает
-          </Link>
-          {hasProfile ? (
+          {!hasProfile ? (
             <>
               <Link
-                href="/dashboard"
+                href="/programs"
                 onClick={() => setMobileOpen(false)}
-                className="block px-6 py-4 font-mono-c text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors text-[#1B3BFF] font-bold"
+                className="block px-6 py-4 text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors"
               >
-                Панель
+                Программы
               </Link>
               <Link
-                href="/profile"
+                href="/#how"
                 onClick={() => setMobileOpen(false)}
-                className="block px-6 py-4 font-mono-c text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors text-[#1B3BFF] font-bold"
+                className="block px-6 py-4 text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors"
               >
-                Профиль
+                Как работает
               </Link>
-            </>
-          ) : (
-            <>
               <Link
                 href="/login"
                 onClick={() => setMobileOpen(false)}
-                className="block px-6 py-4 font-mono-c text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors"
+                className="block px-6 py-4 text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors"
               >
                 Войти
               </Link>
               <Link
                 href="/onboarding"
                 onClick={() => setMobileOpen(false)}
-                className="block px-6 py-4 font-mono-c text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors text-[#1B3BFF] font-bold"
+                className="block px-6 py-4 text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors text-[#1B3BFF] font-bold"
               >
                 Начать →
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/programs"
+                onClick={() => setMobileOpen(false)}
+                className="block px-6 py-4 text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors"
+              >
+                Все программы
+              </Link>
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileOpen(false)}
+                className="block px-6 py-4 text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors text-[#1B3BFF] font-bold"
+              >
+                Панель
+              </Link>
+              <Link
+                href="/profile"
+                onClick={() => setMobileOpen(false)}
+                className="block px-6 py-4 text-[11px] uppercase border-b border-[var(--border)] hover:bg-[var(--blue)] hover:text-[var(--background)] transition-colors text-[#1B3BFF] font-bold"
+              >
+                Профиль
               </Link>
             </>
           )}
