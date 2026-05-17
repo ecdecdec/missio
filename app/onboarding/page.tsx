@@ -123,7 +123,7 @@ function OnboardingContent() {
     } else {
       // Save profile
       localStorage.setItem("missio_profile", JSON.stringify(profile));
-      router.push("/programs");
+      router.push("/profile");
     }
   };
 

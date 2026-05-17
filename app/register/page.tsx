@@ -3,8 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,7 +18,6 @@ export default function RegisterPage() {
     try {
       const { supabase } = await import("@/lib/supabase");
       
-      // Register with Supabase Auth
       const { data, error: authError } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
@@ -35,7 +32,6 @@ export default function RegisterPage() {
         throw authError;
       }
 
-      // Create student record in students table
       if (data.user) {
         const { error: dbError } = await supabase
           .from("students")
@@ -46,13 +42,11 @@ export default function RegisterPage() {
           });
           
         if (dbError) {
-          console.warn("Failed to insert into students table, it might not exist yet:", dbError.message);
+          console.warn("Failed to insert into students table:", dbError.message);
         }
       }
 
-      // Save initial state to localStorage for onboarding flow compatibility
       localStorage.setItem("missio_profile", JSON.stringify({ email: form.email, name: form.name }));
-      
       router.push("/onboarding?email=" + encodeURIComponent(form.email));
     } catch (err: any) {
       setError(err.message || "Ошибка регистрации");
@@ -62,48 +56,66 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-secondary)] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[var(--bg-secondary)] flex items-center justify-center px-4 font-mono-c">
       <div className="w-full max-w-sm">
+        {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="text-2xl" style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif" }}>
-            <span className="text-[var(--green-400)]">•</span>
+          <Link href="/" className="font-display font-bold text-2xl uppercase tracking-tight text-[var(--foreground)] hover:text-[#1B3BFF] transition-colors">
+            POAM
           </Link>
-          <p className="text-sm text-[var(--text-secondary)] mt-2">Создать аккаунт</p>
+          <p className="text-xs text-[var(--text-secondary)] mt-2 uppercase">Создать аккаунт</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white border border-[var(--border)] rounded-2xl p-6 flex flex-col gap-4">
-          {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">{error}</div>}
-          <Input
-            label="Имя"
-            type="text"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="Аружан"
-            required
-          />
-          <Input
-            label="Email"
-            type="email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            placeholder="you@example.com"
-            required
-          />
-          <Input
-            label="Пароль"
-            type="password"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            placeholder="••••••••"
-            required
-          />
-          <Button type="submit" size="lg" className="w-full" disabled={loading}>
-            {loading ? "Создаю аккаунт..." : "Зарегистрироваться"}
-          </Button>
+        <form onSubmit={handleSubmit} className="bg-white border border-[var(--border)] p-6 flex flex-col gap-4">
+          {error && <div className="text-xs text-red-600 bg-red-50 p-3 border border-red-100 uppercase">{error}</div>}
+          
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[10px] uppercase opacity-60">Имя</span>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder="Аружан"
+              required
+              className="w-full border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-3 text-xs outline-none focus:border-[#1B3BFF] transition-colors"
+            />
+          </div>
 
-          <div className="text-center text-sm text-[var(--text-secondary)]">
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[10px] uppercase opacity-60">Email</span>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              placeholder="you@example.com"
+              required
+              className="w-full border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-3 text-xs outline-none focus:border-[#1B3BFF] transition-colors"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[10px] uppercase opacity-60">Пароль</span>
+            <input
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              placeholder="••••••••"
+              required
+              className="w-full border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-3 text-xs outline-none focus:border-[#1B3BFF] transition-colors"
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            className="w-full bg-[var(--foreground)] text-white hover:bg-[#1B3BFF] transition-colors py-3.5 text-xs uppercase font-bold border border-transparent"
+            disabled={loading}
+          >
+            {loading ? "Создаю аккаунт..." : "Зарегистрироваться →"}
+          </button>
+
+          <div className="text-center text-xs text-[var(--text-secondary)] mt-2">
             Уже есть аккаунт?{" "}
-            <Link href="/login" className="text-[var(--green-600)] hover:underline font-medium">
+            <Link href="/login" className="text-[#1B3BFF] hover:underline font-bold">
               Войти
             </Link>
           </div>
