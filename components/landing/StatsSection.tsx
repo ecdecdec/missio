@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { SITE_STATS } from "@/lib/site-stats";
 
 export default function StatsSection() {
   const ref = useRef<HTMLElement>(null);
@@ -23,10 +24,9 @@ export default function StatsSection() {
   }, []);
 
   const stats = [
-    { value: 580, suffix: "+", label: "ПРОГРАММ В БАЗЕ" },
-    { value: 12400, suffix: "+", label: "ШКОЛЬНИКОВ" },
-    { value: 94, suffix: "%", label: "ТОЧНОСТЬ МАТЧА" },
-    { value: 48, suffix: "ч", label: "ДО АЛЕРТА" },
+    { value: SITE_STATS.programs, suffix: "", label: "ПРОГРАММ В БАЗЕ" },
+    { value: SITE_STATS.countries, suffix: "", label: "СТРАН" },
+    { value: SITE_STATS.organizations, suffix: "", label: "ОРГАНИЗАЦИЙ" },
   ];
 
   return (
@@ -36,7 +36,7 @@ export default function StatsSection() {
       id="stats-section"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
           {stats.map((stat, i) => (
             <div key={i} className="text-center">
               <div className="mb-2 font-[family-name:var(--font-space-grotesk)] text-5xl font-black tracking-tighter text-[var(--text-primary)] md:text-6xl lg:text-7xl">

@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { SITE_STATS } from "@/lib/site-stats";
 
 const stats = [
-  { value: "12 400+", label: "верифицированных профилей" },
-  { value: "580+", label: "активных программ" },
-  { value: "94%", label: "точность матчинга" },
+  { value: String(SITE_STATS.programs), label: "программ в базе" },
+  { value: String(SITE_STATS.countries), label: "стран" },
+  { value: String(SITE_STATS.organizations), label: "организаций" },
 ];
 
 const features = [

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SITE_STATS } from "@/lib/site-stats";
 import { motion } from "framer-motion";
 import { ArrowRight, Users, Target, BarChart3, Check } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
@@ -92,9 +93,9 @@ export default function OrgLandingPage() {
         <section className="py-16 bg-[var(--green-900)]">
           <div className="max-w-5xl mx-auto px-4 grid grid-cols-3 gap-8 text-center">
             {[
-              { value: "3,000+", label: "школьников в базе" },
-              { value: "94%", label: "точность матчинга" },
-              { value: "48 ч", label: "до первых заявок" },
+              { value: String(SITE_STATS.programs), label: "программ в базе" },
+              { value: String(SITE_STATS.countries), label: "стран" },
+              { value: String(SITE_STATS.organizations), label: "организаций" },
             ].map((s) => (
               <div key={s.value}>
                 <div className="text-4xl font-bold text-white mb-1" style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif" }}>{s.value}</div>

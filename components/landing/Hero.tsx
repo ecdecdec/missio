@@ -50,8 +50,8 @@ export default function Hero() {
 
           {/* Subheadline */}
           <p className="font-display text-base md:text-lg mt-12 max-w-xl opacity-80 leading-relaxed">
-            12 400+ школьников. 580+ программ в базе.
-            AI с точностью 94% подбирает то, что подходит именно тебе.
+            580+ грантов, обменов и олимпиад в одной базе.
+            AI сравнивает их с твоим профилем и объясняет, куда ты проходишь уже сейчас.
           </p>
 
           {/* Email signup form */}

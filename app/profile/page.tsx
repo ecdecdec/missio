@@ -229,7 +229,7 @@ export default function ProfilePage() {
               <div className="border border-[var(--border)] bg-[var(--bg-secondary)] p-4">
                 <p className="font-mono-c text-[10px] uppercase opacity-60 mb-1">AI-Ассистент</p>
                 <p className="font-display text-xs leading-relaxed opacity-80">
-                  Твой профиль готов на {completion}%. Заполни все разделы анкеты, чтобы повысить точность подбора программ до 94%.
+                  Твой профиль готов на {completion}%. Заполни все разделы анкеты, чтобы подбор программ был точнее.
                 </p>
               </div>
             </div>

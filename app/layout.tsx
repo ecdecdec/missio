@@ -6,7 +6,7 @@ import ScrollProgress from "@/components/layout/ScrollProgress";
 export const metadata: Metadata = {
   title: "Найди свой грант",
   description:
-    "Архив образовательных возможностей. 12 400+ школьников, 580+ программ, 94% точность AI-подбора.",
+    "Гранты, обмены и олимпиады для школьников Казахстана: 580+ программ, подбор по профилю и напоминания о дедлайнах.",
   metadataBase: new URL("https://poam.me"),
   openGraph: {
     title: "Платформа",
