@@ -3,7 +3,7 @@
 Web app that helps school students in Kazakhstan (grades 8–11) find grants, exchanges,
 olympiads and summer schools they are actually eligible for, and keep track of deadlines.
 
-Live: https://missio-swart.vercel.app
+Live: https://poam.me
 
 ## What it does
 
