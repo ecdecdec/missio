@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# missio
 
-## Getting Started
+Web app that helps school students in Kazakhstan (grades 8–11) find grants, exchanges,
+olympiads and summer schools they are actually eligible for, and keep track of deadlines.
 
-First, run the development server:
+Live: https://missio-swart.vercel.app
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## What it does
+
+- **Program database** — ~580 programs (`lib/programs-data.ts`) with type, country, grade range,
+  required English level (CEFR), deadline and tags.
+- **Matching** — `POST /api/match` sends the student profile and a trimmed list of programs to an
+  LLM, which returns a 0–100 fit score per program with reasons and warnings
+  (gaps in eligibility, tight deadlines). Results are cached in `match_cache`.
+- **Deadline alerts** — `POST /api/alert/generate` writes a short personal reminder; tone depends
+  on how close the deadline is.
+- **Program import** — `POST /api/programs/parse` turns a pasted program announcement into a
+  structured record, so new programs can be added without manual data entry.
+- **Chat** — `POST /api/chat`, an assistant that answers questions about programs and documents
+  using the student's profile as context.
+- **Organisations** — schools and program operators can post programs and see applicants
+  (`app/org`).
+
+## Stack
+
+Next.js 16 (App Router), React 19, TypeScript, Tailwind, Supabase (Postgres + auth),
+Anthropic and Azure OpenAI APIs, zod, framer-motion.
+
+## Data model
+
+`supabase/migrations/001_initial.sql`:
+
+```
+students ──< matches >── programs >── organizations
+    │                        │
+    ├──< applications >──────┘
+    └──< alerts
+match_cache
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Running locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`.env.local`:
 
-## Learn More
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+ANTHROPIC_API_KEY=
+AZURE_OPENAI_ENDPOINT=
+AZURE_OPENAI_API_KEY=
+AZURE_OPENAI_DEPLOYMENT=
+AZURE_API_VERSION=
+```
 
-To learn more about Next.js, take a look at the following resources:
+Apply the schema with `supabase db push` or by running the migration in the Supabase SQL editor.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Layout
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/
+  api/            match, chat, alert, program parsing
+  dashboard/      student dashboard: matches, deadlines, applications, chat
+  org/            organisation side
+  programs/       public program catalogue
+components/       landing, dashboard and UI components
+lib/              API clients, program data, types
+supabase/         SQL migrations
+```
